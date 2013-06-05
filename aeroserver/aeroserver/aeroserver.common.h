@@ -1,5 +1,5 @@
 #define MAXLOGIN 20
-#define MaxCitys 30
+#define MAXCITIES 30
 
 typedef struct recDatabase Database, *pDatabase;
 typedef struct recCidade Cidade, *pCidade;
@@ -10,6 +10,7 @@ typedef struct recUser User, *pUser;
 
 struct recDatabase {
     int inBackground;
+    int data;
     //Cidades
     pCidade cidades;
     pCidade lastCidade;

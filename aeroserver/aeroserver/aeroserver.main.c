@@ -13,9 +13,6 @@ int main(int argc, const char * argv[], char * envp[])
 {
     int i,pid;
     
-    argc = 2;
-    argv[1] = "fg";
-    
     if (argc == 2)
     {
         //Mostrar Variáveis de Ambiente

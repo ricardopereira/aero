@@ -44,6 +44,7 @@ pDatabase readFile(FILE *f)
     db->users = NULL;
     db->totalUsers = 0;
     db->lastUser = NULL;
+    db->data = 0;
     
     //Total de Cidades
     fread(&totalCidades,sizeof(int),1,f);
@@ -313,7 +314,6 @@ int loadUsers(const char *path, pDatabase db)
 {
     int f;
     int TotalUsers;
-    int FirstUser=1;
     char UserName[MAXLOGIN];
     char UserPassword[MAXLOGIN];
     pUser auxUser;
@@ -341,9 +341,7 @@ int loadUsers(const char *path, pDatabase db)
         //Criar nova User na estrutura
         addUser(db,UserName, UserPassword);
         TotalUsers--;
-        //ToDo: free(str);
     }
-    
     
     //Fechar o ficheiro
     close(f);
@@ -410,5 +408,34 @@ int saveUsers(const char *path, pDatabase db)
     writeUserFile(f,db);
     
     fclose(f);
+    return 0;
+
+int loadData(const char *path, pDatabase db)
+{
+    int f;
+    if (!db) return 1;
+    f = open(path,O_RDONLY);
+    if (f == -1)
+    {
+        printf("(loadData)Erro: não foi possível abrir %s\n",path);
+        return 1;
+    }
+    read(f,&db->data,sizeof(int));
+    close(f);
+    return 0;
+}
+
+int saveData(const char *path, pDatabase db)
+{
+    int f, test = 4;
+    if (!db) return 1;
+    f = creat(path,(S_IRUSR | S_IWUSR) | (S_IRGRP | S_IXGRP) | (S_IWOTH));
+    if (f == -1)
+    {
+        printf("(saveData)Erro: não foi possível criar %s\n",path);
+        return 1;
+    }
+    write(f,&test,sizeof(int)); //db->data
+    close(f);
     return 0;
 }
