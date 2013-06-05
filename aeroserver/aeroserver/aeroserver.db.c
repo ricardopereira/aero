@@ -407,8 +407,9 @@ int saveUsers(const char *path, pDatabase db)
     //Gravar para o ficheiro
     writeUserFile(f,db);
     
-    fclose(f);
+    close(f);
     return 0;
+}
 
 int loadData(const char *path, pDatabase db)
 {
