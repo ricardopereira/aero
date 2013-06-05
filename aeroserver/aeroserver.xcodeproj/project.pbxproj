@@ -1,0 +1,278 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		D7037BA01743E6EC000BF7FE /* aeroserver.db.c in Sources */ = {isa = PBXBuildFile; fileRef = D7037B9F1743E6EC000BF7FE /* aeroserver.db.c */; };
+		D7037BA31743EEC5000BF7FE /* aeroserver.voos.c in Sources */ = {isa = PBXBuildFile; fileRef = D7037BA21743EEC5000BF7FE /* aeroserver.voos.c */; };
+		D740FF121742E1E40024E7C7 /* aeroserver.main.c in Sources */ = {isa = PBXBuildFile; fileRef = D740FF111742E1E40024E7C7 /* aeroserver.main.c */; };
+		D740FF141742E1E40024E7C7 /* aeroserver.1 in CopyFiles */ = {isa = PBXBuildFile; fileRef = D740FF131742E1E40024E7C7 /* aeroserver.1 */; };
+		D7A67CDE175F9A9500D1404F /* aero.shell.c in Sources */ = {isa = PBXBuildFile; fileRef = D7A67CDD175F9A9500D1404F /* aero.shell.c */; };
+		D7B1B4D61748D0D5007E4D21 /* aeroserver.common.c in Sources */ = {isa = PBXBuildFile; fileRef = D7B1B4D51748D0D5007E4D21 /* aeroserver.common.c */; };
+		D7BF77F7174A25FD00F173EA /* aeroserver.service.c in Sources */ = {isa = PBXBuildFile; fileRef = D7BF77F6174A25FD00F173EA /* aeroserver.service.c */; };
+		D7BF77FF174A8EFD00F173EA /* aeroserver.cidades.c in Sources */ = {isa = PBXBuildFile; fileRef = D7BF77FC174A8EFD00F173EA /* aeroserver.cidades.c */; };
+		D7BF7800174A8EFD00F173EA /* aeroserver.clients.c in Sources */ = {isa = PBXBuildFile; fileRef = D7BF77FD174A8EFD00F173EA /* aeroserver.clients.c */; };
+		D7BF7801174A8EFD00F173EA /* aeroserver.users.c in Sources */ = {isa = PBXBuildFile; fileRef = D7BF77FE174A8EFD00F173EA /* aeroserver.users.c */; };
+		D7BF7804174A901500F173EA /* aeroserver.testunit.c in Sources */ = {isa = PBXBuildFile; fileRef = D7BF7803174A901500F173EA /* aeroserver.testunit.c */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		D740FF0C1742E1E40024E7C7 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+				D740FF141742E1E40024E7C7 /* aeroserver.1 in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		D7037B9E1743E6EC000BF7FE /* aeroserver.db.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = aeroserver.db.h; sourceTree = "<group>"; };
+		D7037B9F1743E6EC000BF7FE /* aeroserver.db.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = aeroserver.db.c; sourceTree = "<group>"; };
+		D7037BA11743EEC5000BF7FE /* aeroserver.voos.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = aeroserver.voos.h; sourceTree = "<group>"; };
+		D7037BA21743EEC5000BF7FE /* aeroserver.voos.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = aeroserver.voos.c; sourceTree = "<group>"; };
+		D740FF0E1742E1E40024E7C7 /* aeroserver */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = aeroserver; sourceTree = BUILT_PRODUCTS_DIR; };
+		D740FF111742E1E40024E7C7 /* aeroserver.main.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = aeroserver.main.c; sourceTree = "<group>"; };
+		D740FF131742E1E40024E7C7 /* aeroserver.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = aeroserver.1; sourceTree = "<group>"; };
+		D7A67CDC175F9A9500D1404F /* aero.shell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = aero.shell.h; path = ../../common/aero.shell.h; sourceTree = "<group>"; };
+		D7A67CDD175F9A9500D1404F /* aero.shell.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = aero.shell.c; path = ../../common/aero.shell.c; sourceTree = "<group>"; };
+		D7B1B4D41748D0D5007E4D21 /* aeroserver.common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = aeroserver.common.h; sourceTree = "<group>"; };
+		D7B1B4D51748D0D5007E4D21 /* aeroserver.common.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = aeroserver.common.c; sourceTree = "<group>"; };
+		D7B1B4D71748D0DF007E4D21 /* aero.common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = aero.common.h; path = ../../common/aero.common.h; sourceTree = "<group>"; };
+		D7BF77F5174A25FD00F173EA /* aeroserver.service.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = aeroserver.service.h; sourceTree = "<group>"; };
+		D7BF77F6174A25FD00F173EA /* aeroserver.service.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = aeroserver.service.c; sourceTree = "<group>"; };
+		D7BF77F9174A8EFD00F173EA /* aeroserver.cidades.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = aeroserver.cidades.h; sourceTree = "<group>"; };
+		D7BF77FA174A8EFD00F173EA /* aeroserver.clients.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = aeroserver.clients.h; sourceTree = "<group>"; };
+		D7BF77FB174A8EFD00F173EA /* aeroserver.users.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = aeroserver.users.h; sourceTree = "<group>"; };
+		D7BF77FC174A8EFD00F173EA /* aeroserver.cidades.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = aeroserver.cidades.c; sourceTree = "<group>"; };
+		D7BF77FD174A8EFD00F173EA /* aeroserver.clients.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = aeroserver.clients.c; sourceTree = "<group>"; };
+		D7BF77FE174A8EFD00F173EA /* aeroserver.users.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = aeroserver.users.c; sourceTree = "<group>"; };
+		D7BF7802174A901500F173EA /* aeroserver.testunit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = aeroserver.testunit.h; sourceTree = "<group>"; };
+		D7BF7803174A901500F173EA /* aeroserver.testunit.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = aeroserver.testunit.c; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		D740FF0B1742E1E40024E7C7 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		D740FF051742E1E40024E7C7 = {
+			isa = PBXGroup;
+			children = (
+				D740FF101742E1E40024E7C7 /* aeroserver */,
+				D740FF0F1742E1E40024E7C7 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		D740FF0F1742E1E40024E7C7 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				D740FF0E1742E1E40024E7C7 /* aeroserver */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		D740FF101742E1E40024E7C7 /* aeroserver */ = {
+			isa = PBXGroup;
+			children = (
+				D7B1B4D71748D0DF007E4D21 /* aero.common.h */,
+				D7A67CDC175F9A9500D1404F /* aero.shell.h */,
+				D7A67CDD175F9A9500D1404F /* aero.shell.c */,
+				D7B1B4D41748D0D5007E4D21 /* aeroserver.common.h */,
+				D7B1B4D51748D0D5007E4D21 /* aeroserver.common.c */,
+				D7BF77F9174A8EFD00F173EA /* aeroserver.cidades.h */,
+				D7BF77FC174A8EFD00F173EA /* aeroserver.cidades.c */,
+				D7037BA11743EEC5000BF7FE /* aeroserver.voos.h */,
+				D7037BA21743EEC5000BF7FE /* aeroserver.voos.c */,
+				D7BF77FA174A8EFD00F173EA /* aeroserver.clients.h */,
+				D7BF77FD174A8EFD00F173EA /* aeroserver.clients.c */,
+				D7BF77FB174A8EFD00F173EA /* aeroserver.users.h */,
+				D7BF77FE174A8EFD00F173EA /* aeroserver.users.c */,
+				D7037B9E1743E6EC000BF7FE /* aeroserver.db.h */,
+				D7037B9F1743E6EC000BF7FE /* aeroserver.db.c */,
+				D7BF77F5174A25FD00F173EA /* aeroserver.service.h */,
+				D7BF77F6174A25FD00F173EA /* aeroserver.service.c */,
+				D740FF111742E1E40024E7C7 /* aeroserver.main.c */,
+				D7BF7802174A901500F173EA /* aeroserver.testunit.h */,
+				D7BF7803174A901500F173EA /* aeroserver.testunit.c */,
+				D740FF131742E1E40024E7C7 /* aeroserver.1 */,
+			);
+			path = aeroserver;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		D740FF0D1742E1E40024E7C7 /* aeroserver */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D740FF171742E1E40024E7C7 /* Build configuration list for PBXNativeTarget "aeroserver" */;
+			buildPhases = (
+				D740FF0A1742E1E40024E7C7 /* Sources */,
+				D740FF0B1742E1E40024E7C7 /* Frameworks */,
+				D740FF0C1742E1E40024E7C7 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = aeroserver;
+			productName = aeroserver;
+			productReference = D740FF0E1742E1E40024E7C7 /* aeroserver */;
+			productType = "com.apple.product-type.tool";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		D740FF061742E1E40024E7C7 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0460;
+				ORGANIZATIONNAME = "Ricardo Pereira";
+			};
+			buildConfigurationList = D740FF091742E1E40024E7C7 /* Build configuration list for PBXProject "aeroserver" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = D740FF051742E1E40024E7C7;
+			productRefGroup = D740FF0F1742E1E40024E7C7 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				D740FF0D1742E1E40024E7C7 /* aeroserver */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		D740FF0A1742E1E40024E7C7 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D740FF121742E1E40024E7C7 /* aeroserver.main.c in Sources */,
+				D7037BA01743E6EC000BF7FE /* aeroserver.db.c in Sources */,
+				D7037BA31743EEC5000BF7FE /* aeroserver.voos.c in Sources */,
+				D7B1B4D61748D0D5007E4D21 /* aeroserver.common.c in Sources */,
+				D7BF77F7174A25FD00F173EA /* aeroserver.service.c in Sources */,
+				D7BF77FF174A8EFD00F173EA /* aeroserver.cidades.c in Sources */,
+				D7BF7800174A8EFD00F173EA /* aeroserver.clients.c in Sources */,
+				D7BF7801174A8EFD00F173EA /* aeroserver.users.c in Sources */,
+				D7BF7804174A901500F173EA /* aeroserver.testunit.c in Sources */,
+				D7A67CDE175F9A9500D1404F /* aero.shell.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		D740FF151742E1E40024E7C7 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++98";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = c89;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		D740FF161742E1E40024E7C7 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++98";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_C_LANGUAGE_STANDARD = c89;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		D740FF181742E1E40024E7C7 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		D740FF191742E1E40024E7C7 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		D740FF091742E1E40024E7C7 /* Build configuration list for PBXProject "aeroserver" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D740FF151742E1E40024E7C7 /* Debug */,
+				D740FF161742E1E40024E7C7 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		D740FF171742E1E40024E7C7 /* Build configuration list for PBXNativeTarget "aeroserver" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D740FF181742E1E40024E7C7 /* Debug */,
+				D740FF191742E1E40024E7C7 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = D740FF061742E1E40024E7C7 /* Project object */;
+}

@@ -1,0 +1,1 @@
+int doJob(char *command, char *argv[], int *argc, pRequest req);

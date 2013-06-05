@@ -1,8 +1,0 @@
-Vamos tentar fazer 
-merge disto
-ok dude
-<<<<<<< HEAD
-Minha alteração
-=======
-sou o maior
->>>>>>> maior
