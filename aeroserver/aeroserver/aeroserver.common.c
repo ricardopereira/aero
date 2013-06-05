@@ -64,10 +64,11 @@ void showClientesLigados(pClient p)
 
 void upperCase(char *Str, char *newStr)
 {
-    for(int i=0; i<=strlen(Str);i++)
+    int i;
+    for (i=0; i<=strlen(Str); i++)
     {
-        if( (Str[i] > 96 ) && (Str[i] < 123) ) // verifica se é minuscula
-            newStr[i] = Str[i] - 'a' + 'A';   //transformação
+        if( (Str[i] > 96 ) && (Str[i] < 123) ) //Verifica se é minuscula
+            newStr[i] = Str[i] - 'a' + 'A';   //Transformação
         else
             newStr[i] = Str[i]; //Igual
     }

@@ -81,15 +81,6 @@ int startServer(int modeBG)
     db->inBackground = modeBG;
     if (!db) return 1;
     
-    //Modo Foreground: informação
-    if (!db->inBackground)
-    {
-        printf("\nCidades:\n");
-        showCidades(db->cidades);
-        printf("\nVoos disponíveis:\n");
-        showVoosDisponiveis(db->voos,0);
-    }
-    
     //Obter password do Administrador
     if (loadAdmin("SOADMPASS",db) != 0)
     {
@@ -103,7 +94,17 @@ int startServer(int modeBG)
         return 1;
     }
     
-    saveData("SODATA",db);
+    //Modo Foreground: informação
+    if (!db->inBackground)
+    {
+        printf("\nUsers:\n");
+        showUtilizadores(db->users,1);
+        printf("\nCidades:\n");
+        showCidades(db->cidades);
+        printf("\nVoos disponíveis:\n");
+        showVoosDisponiveis(db->voos,0);
+    }
+    
     //Obter Data para o sistema
     if (loadData("SODATA",db) != 0)
     {
@@ -117,8 +118,6 @@ int startServer(int modeBG)
     }
     else
         printf("Data do Sistema: %d\n",db->data);
-    
-    return 1;
     
     //Sinal para parar o servidor
     signal(SIGUSR1,stopServer);

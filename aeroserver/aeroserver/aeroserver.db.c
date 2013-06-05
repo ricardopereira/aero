@@ -307,24 +307,21 @@ int loadAdmin(const char *path, pDatabase db)
         addUser(db,ADMIN,adminPassword);
         return 0;
     }
-        return 1;
+    return 1;
 }
 
 int loadUsers(const char *path, pDatabase db)
 {
     int f;
-    int TotalUsers;
+    int TotalUsers=0;
     char UserName[MAXLOGIN];
     char UserPassword[MAXLOGIN];
-    pUser auxUser;
-    
-    TotalUsers =0;
     
     if (!db) return 1;
+    
     //Abrir para leitura
-
     f = open(path, O_RDONLY,(S_IRUSR | S_IXOTH));
-    if (f==-1)
+    if (f == -1)
     {
         printf("(loadUsers)Erro: não foi possível abrir %s\n",path);
         return 1;
@@ -345,14 +342,6 @@ int loadUsers(const char *path, pDatabase db)
     
     //Fechar o ficheiro
     close(f);
-    
-    auxUser = db->users;
-    while (auxUser)
-    {
-        printf("Utilizador:%s pass:%s\n",auxUser->username,auxUser->password);
-        auxUser = auxUser->next;
-    }
-
     return 0;
 }
 
@@ -364,7 +353,7 @@ void writeUserFile(int f,pDatabase p)
     auxUser = p->users;
     if (auxUser)
     {
-        if (f==-1)
+        if (f == -1)
         {
             printf("(writeUserFile)Erro: não foi possível criar\n");
         }
@@ -376,7 +365,7 @@ void writeUserFile(int f,pDatabase p)
             
             while(auxUser)
             {
-                if (strcmp(auxUser->username, ADMIN)<0)
+                if (strcmp(auxUser->username,ADMIN) < 0)
                 {
                     write(f,auxUser->username,sizeof(auxUser->username));
                     write(f,auxUser->password,sizeof(auxUser->password));
@@ -384,7 +373,6 @@ void writeUserFile(int f,pDatabase p)
                 auxUser = auxUser->next;
             }
         }
-        
         close(f);
     }
     else
@@ -393,20 +381,19 @@ void writeUserFile(int f,pDatabase p)
     }
 }
 
-
 int saveUsers(const char *path, pDatabase db)
 {
     int f;
-    
-    f = creat("SOAGENTES1",(S_IRUSR | S_IWUSR) | (S_IRGRP | S_IXGRP) | (S_IWOTH));
-    if (f==-1)
+    if (!db) return 1;
+    f = creat("SOAGENTES",(S_IRUSR | S_IWUSR) | (S_IRGRP | S_IXGRP) | (S_IWOTH));
+    if (f == -1)
     {
         printf("(saveUsers)Erro: não foi possível criar %s\n",path);
         return 1;
     }
     //Gravar para o ficheiro
     writeUserFile(f,db);
-    
+
     close(f);
     return 0;
 }
@@ -428,7 +415,7 @@ int loadData(const char *path, pDatabase db)
 
 int saveData(const char *path, pDatabase db)
 {
-    int f, test = 4;
+    int f;
     if (!db) return 1;
     f = creat(path,(S_IRUSR | S_IWUSR) | (S_IRGRP | S_IXGRP) | (S_IWOTH));
     if (f == -1)
@@ -436,7 +423,7 @@ int saveData(const char *path, pDatabase db)
         printf("(saveData)Erro: não foi possível criar %s\n",path);
         return 1;
     }
-    write(f,&test,sizeof(int)); //db->data
+    write(f,&db->data,sizeof(int));
     close(f);
     return 0;
 }
