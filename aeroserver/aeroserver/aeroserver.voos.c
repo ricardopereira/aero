@@ -205,4 +205,21 @@ pVoo findVoobyCity(pDatabase DB, char *Cityname)
     return NULL;
 }
 
-
+void checkVoos(pDatabase db)
+{
+    pVoo auxVoo;
+    auxVoo = db->voos;
+    while (auxVoo)
+    {
+        //Verificar se o voo é passado
+        if (auxVoo->dia < db->data)
+        {
+            printf("Voo %d, dia %d de origem %s e destino %s com %d passageiros (%d)\n",auxVoo->ID,auxVoo->dia,
+                   auxVoo->cidadeOrigem->nome,
+                   auxVoo->cidadeDestino->nome,
+                   auxVoo->ocupacao,
+                   auxVoo->capacidade);
+        }
+        auxVoo = auxVoo->next;
+    }
+}

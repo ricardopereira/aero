@@ -3,11 +3,12 @@
 #define MAXDATASTR 8
 #define DEFAULTDATA 1
 //Variável de Ambiente
-#define ENVFICHEIRO "SOFICHEIRO"
+#define ENVFICHEIRO "SOFICHEIRO" //Localização do ficheiro de base de dados
 //Ficheiros
-#define SOADMPASS "SOADMPASS"
-#define SOAGENTES "SOAGENTES"
-#define SODATA "SODATA"
+#define SOADMPASS "SOADMPASS" //Password do administrador
+#define SOAGENTES "SOAGENTES" //Utilizadores
+#define SODATA "SODATA" //Data do sistema
+#define SOHISTORICO "SOHISTORICO" //Voos ultrapassados
 
 typedef struct recDatabase Database, *pDatabase;
 typedef struct recCidade Cidade, *pCidade;

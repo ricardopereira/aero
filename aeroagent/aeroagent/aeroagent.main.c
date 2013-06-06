@@ -27,7 +27,7 @@ int main(int argc, const char * argv[])
     int commandArgc = 0;
     int loggedIn = 0;
     //Ao alterar a lista de comandos, é necessário alterar a constante TOTALCOMMANDS
-    char *listCommands[] = {"close","login","help"};
+    char *listCommands[] = {"exit","login","help"};
     int listCommandsArgc[] = {0,1,0};
     //Request
     req = NULL;
@@ -49,7 +49,7 @@ int main(int argc, const char * argv[])
         }
         
         //Executar comando
-        if (strcmp(commandArgv[0],"close") == 0)
+        if (strcmp(commandArgv[0],"exit") == 0)
             break;
         else if (strcmp(commandArgv[0],"help") == 0)
         {

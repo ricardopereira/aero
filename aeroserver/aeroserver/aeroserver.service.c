@@ -77,10 +77,26 @@ int startServer(int modeBG)
     else
         dbDefault = 0;
     
+    ////////////////////////////
     //Carregar dados do sistema
+    ////////////////////////////
     db = loadDB(dbName);
     db->inBackground = modeBG;
     if (!db) return 1;
+    
+    //Obter Data Actual do sistema
+    if (loadData(SODATA,db) != 0)
+    {
+        printf("Não foi possível obter a data do sistema: %s\n",SODATA);
+        return 1;
+    }
+    else if (db->data == 0)
+    {
+        printf("Data do sistema inválida\n");
+        return 1;
+    }
+    else
+        printf("Data do Sistema: %d\n",db->data);
     
     //Obter password do Administrador
     if (loadAdmin(SOADMPASS,db) != 0)
@@ -95,20 +111,6 @@ int startServer(int modeBG)
         return 1;
     }
     
-    //Obter Data para o sistema
-    if (loadData(SODATA,db) != 0)
-    {
-        printf("Não foi possível obter a data do sistema: %s\n",SODATA);
-        return 1;
-    }
-    else if (db->data == 0)
-    {
-        printf("Data do sistema inválida\n");
-        return 1;
-    }
-    else
-        printf("Data do Sistema: %d\n",db->data);
-    
     //Modo Foreground: informação
     if (!db->inBackground)
     {
@@ -116,9 +118,18 @@ int startServer(int modeBG)
         showUtilizadores(db->users,1);
         printf("\nCidades:\n");
         showCidades(db->cidades);
+        printf("\nVoos:\n");
+        showVoosDisponiveis(db->voos,0);
+        
+        //Verificar histórico de voos
+        printf("\nVoos ultrapassados:\n");
+        checkVoos(db);
+        //Voos após a passagem para o histórico
         printf("\nVoos disponíveis:\n");
         showVoosDisponiveis(db->voos,0);
     }
+    
+    return 1;
     
     //Sinal para parar o servidor
     signal(SIGUSR1,stopServer);
@@ -285,7 +296,7 @@ int doJob(pDatabase db, pRequest req, char *pipe)
         else
         {
             action.idAction = FAILED_REQ;
-            sprintf(action.text,"Data do sistema: %d",db->data);
+            sprintf(action.text," Data do sistema: %d",db->data);
         }
     }
     else

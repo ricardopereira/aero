@@ -204,7 +204,6 @@ pUser createUser(pUser p)
     return new;
 }
 
-
 pUser addUser(pDatabase db, char *username, char *password)
 {
     pUser new, auxUser;
@@ -228,7 +227,6 @@ pUser addUser(pDatabase db, char *username, char *password)
                 //Duplicado
                 return auxUser;
             }
-        
             
             strcpy(Str1, new->username);
             strcpy(Str2, auxUser->username);
