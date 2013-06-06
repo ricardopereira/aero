@@ -10,8 +10,12 @@
 #define NOEXIST_REQ 2
 #define LOGIN_OK 3
 #define LOGIN_FAILED 4
+#define FAILED_REQ 5
 #define SHUTDOWN 9
 #define NOACCESS 10
+//Mensagens
+#define MSG_COMMANDSUCCESS "Comando executado com sucesso"
+#define MSG_COMMANDFAILED "Ocorreram problemas"
 
 typedef struct recRequest Request, *pRequest;
 typedef struct recAction Action, *pAction;

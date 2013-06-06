@@ -1,5 +1,13 @@
 #define MAXLOGIN 20
 #define MAXCITIES 30
+#define MAXDATASTR 8
+#define DEFAULTDATA 1
+//Variável de Ambiente
+#define ENVFICHEIRO "SOFICHEIRO"
+//Ficheiros
+#define SOADMPASS "SOADMPASS"
+#define SOAGENTES "SOAGENTES"
+#define SODATA "SODATA"
 
 typedef struct recDatabase Database, *pDatabase;
 typedef struct recCidade Cidade, *pCidade;

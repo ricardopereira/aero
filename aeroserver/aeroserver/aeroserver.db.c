@@ -400,30 +400,55 @@ int saveUsers(const char *path, pDatabase db)
 
 int loadData(const char *path, pDatabase db)
 {
-    int f;
+    int f, i=0;
+    char aux, data[MAXDATASTR];
     if (!db) return 1;
+    //Abrir ficheiro
     f = open(path,O_RDONLY);
     if (f == -1)
     {
-        printf("(loadData)Erro: não foi possível abrir %s\n",path);
-        return 1;
+        if (!db->inBackground)
+        {
+            printf("(loadData)Erro: não foi possível abrir %s\n",path);
+            printf("(loadData)criar %s com data por defeito\n",path);
+        }
+        //Cria ficheiro com data por defeito
+        db->data = DEFAULTDATA;
+        saveData(path,db);
+        f = open(path,O_RDONLY);
+        if (f == -1) return 1;
     }
-    read(f,&db->data,sizeof(int));
+    //Ler o valor (data é um inteiro mas gravado em caracteres)
+    while (read(f,&aux,sizeof(char)))
+    {
+        if (i == MAXDATASTR-1) break;
+        data[i++] = aux;
+    }
+    //Converter para inteiro
+    db->data = atoi(data);
     close(f);
     return 0;
 }
 
 int saveData(const char *path, pDatabase db)
 {
-    int f;
+    int f, i=0;
+    char data[MAXDATASTR];
     if (!db) return 1;
-    f = creat(path,(S_IRUSR | S_IWUSR) | (S_IRGRP | S_IXGRP) | (S_IWOTH));
+    //Cria ou substituir ficheiro
+    f = creat(path,(S_IRUSR | S_IWUSR) | (S_IRGRP | S_IWUSR) | (S_IWOTH));
     if (f == -1)
     {
         printf("(saveData)Erro: não foi possível criar %s\n",path);
         return 1;
     }
-    write(f,&db->data,sizeof(int));
+    //Converter para string
+    sprintf(data,"%d",db->data);
+    //Gravar cada caracter
+    while (*(data+i))
+        write(f,data+i++,sizeof(char));
+    //Gravar terminador
+    write(f,data+i,sizeof(char));
     close(f);
     return 0;
 }

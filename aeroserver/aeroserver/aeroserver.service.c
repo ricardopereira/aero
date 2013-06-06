@@ -13,10 +13,10 @@
 #include "aeroserver.users.h"
 #include "aeroserver.clients.h"
 
-#define SOFICHEIRO "db.bin"
-
 pDatabase db;
 int server;
+int dbDefault;
+char *dbName;
 
 int doJob(pDatabase db, pRequest req, char *pipe);
 void shutdownClients(pDatabase db);
@@ -44,8 +44,9 @@ void stopServer(int sinal)
     //Remover named pipe do Servidor
     unlink(SERVER);
     //Gravar DB
-    saveDB(SOFICHEIRO,db);
+    saveDB(dbName,db);
     //Libertar memória
+    if (dbDefault) free(dbName);
     freeDB(db);
     //Fechar a aplicação
     exit(0);
@@ -56,7 +57,6 @@ int startServer(int modeBG)
     Request req;
     char pipeClient[15];
     int shutDown = 0, res;
-    char *dbName;
     
     //Verificar se o servidor já está a correr
     if (access(SERVER,W_OK) != -1)
@@ -65,34 +65,49 @@ int startServer(int modeBG)
         return 1;
     }
     //Verificar o caminho da base de dados
-    dbName = getenv("SOFICHEIRO");
+    dbName = getenv(ENVFICHEIRO);
     if (!dbName)
     {
-        printf("Configuração em falta: SOFICHEIRO\n");
+        printf("Configuração em falta: %s\n",ENVFICHEIRO);
+        //Por defeito
+        dbName = malloc(sizeof(char)*6);
+        strcpy(dbName,"db.bin");
+        dbDefault = 1;
     }
-    //Verificar data atual
-    if (!getenv("SODATA"))
-    {
-        printf("Configuração em falta: SODATA\n");
-    }
+    else
+        dbDefault = 0;
     
     //Carregar dados do sistema
-    db = loadDB(SOFICHEIRO);
+    db = loadDB(dbName);
     db->inBackground = modeBG;
     if (!db) return 1;
     
     //Obter password do Administrador
-    if (loadAdmin("SOADMPASS",db) != 0)
+    if (loadAdmin(SOADMPASS,db) != 0)
     {
-        printf("Não foi possível obter Administrador: %s\n","SOADMPASS");
+        printf("Não foi possível obter Administrador: %s\n",SOADMPASS);
         return 1;
     }
     //Obter lista de utilizadores
-    if (loadUsers("SOAGENTES",db) != 0)
+    if (loadUsers(SOAGENTES,db) != 0)
     {
-        printf("Não foi possível obter Utilizadores: %s\n","SOAGENTES");
+        printf("Não foi possível obter Utilizadores: %s\n",SOAGENTES);
         return 1;
     }
+    
+    //Obter Data para o sistema
+    if (loadData(SODATA,db) != 0)
+    {
+        printf("Não foi possível obter a data do sistema: %s\n",SODATA);
+        return 1;
+    }
+    else if (db->data == 0)
+    {
+        printf("Data do sistema inválida\n");
+        return 1;
+    }
+    else
+        printf("Data do Sistema: %d\n",db->data);
     
     //Modo Foreground: informação
     if (!db->inBackground)
@@ -104,20 +119,6 @@ int startServer(int modeBG)
         printf("\nVoos disponíveis:\n");
         showVoosDisponiveis(db->voos,0);
     }
-    
-    //Obter Data para o sistema
-    if (loadData("SODATA",db) != 0)
-    {
-        printf("Não foi possível obter a data do sistema: %s\n","SODATA");
-        return 1;
-    }
-    else if (db->data == 0)
-    {
-        printf("Não foi possível obter a data do sistema: %s\n","SODATA");
-        return 1;
-    }
-    else
-        printf("Data do Sistema: %d\n",db->data);
     
     //Sinal para parar o servidor
     signal(SIGUSR1,stopServer);
@@ -148,7 +149,10 @@ int startServer(int modeBG)
         else
             if (!db->inBackground)
                 printf("(%s)comando recebido: %s\n",pipeClient,req.command);
+        
+        ///////////////////////
         //Responder ao comando
+        ///////////////////////
         res = doJob(db,&req,pipeClient);
         if (res == SHUTDOWN) shutDown = 1;
 
@@ -191,8 +195,15 @@ int doJob(pDatabase db, pRequest req, char *pipe)
     //Interpretar os argumentos
     getCommandArgs(req->command,commandArgv,&commandArgc);
     
+    ///////////
     //COMANDOS
-    /**/ if (strcmp("login",commandArgv[0]) == 0)
+    ///////////
+    /**/ if (commandArgc <= 0)
+    {
+        action.idAction = NOEXIST_REQ;
+        sprintf(action.text,"%s","comando vazio");
+    }
+    else if (strcmp("login",commandArgv[0]) == 0)
     {
         if (action.idAction == LOGIN_OK)
         {
@@ -218,7 +229,13 @@ int doJob(pDatabase db, pRequest req, char *pipe)
         //Resposta
         if (db->clients)
         {
-            strcpy(action.text,"Clientes activos:\n");
+            strcpy(action.text,"\nINFORMAÇÃO DO SISTEMA:\n");
+            snprintf(action.text,sizeof(action.text),"%sData actual: %d\n",action.text,db->data);
+            snprintf(action.text,sizeof(action.text),"%sTotal de utilizadores: %d\n",action.text,db->totalUsers);
+            snprintf(action.text,sizeof(action.text),"%sTotal de cidades: %d\n",action.text,db->totalCidades);
+            snprintf(action.text,sizeof(action.text),"%sTotal de voos disponíveis: %d\n",action.text,db->totalVoos);
+
+            snprintf(action.text,sizeof(action.text),"%sClientes activos (%d):\n",action.text,db->totalClients);
             ptr = db->clients;
             while (ptr)
             {
@@ -239,7 +256,7 @@ int doJob(pDatabase db, pRequest req, char *pipe)
             addCidade(db,commandArgv[1],0);
         }
     }
-    else if (strcmp("addvoo",req->command) == 0 && action.idAction == LOGIN_OK && commandArgc == 5)
+    else if (strcmp("addvoo",commandArgv[0]) == 0 && action.idAction == LOGIN_OK && commandArgc == 5)
     {
         action.idAction = SUCCESS_REQ;
         //Cidades
@@ -249,10 +266,27 @@ int doJob(pDatabase db, pRequest req, char *pipe)
         auxCidadeDestino = findCidade(db->cidades,commandArgv[2]);
         if (!auxCidadeDestino && !db->inBackground)
             printf("(%s)cidade destino \"%s\" não existe",pipe,commandArgv[2]);
-        //Dia
+        //Dia (Data)
         auxBf = atoi(commandArgv[3]);
         //Adiciona o voo
         addVoo(db,auxCidadeOrigem,auxCidadeDestino,auxBf);
+    }
+    else if (strcmp("mudadata",commandArgv[0]) == 0 && action.idAction == LOGIN_OK && commandArgc == 2)
+    {
+        //Dia (Data)
+        auxBf = atoi(commandArgv[1]);
+        //Verificar superioridade
+        if (auxBf && auxBf > db->data)
+        {
+            db->data = auxBf;
+            saveData(SODATA,db);
+            action.idAction = SUCCESS_REQ;
+        }
+        else
+        {
+            action.idAction = FAILED_REQ;
+            sprintf(action.text,"Data do sistema: %d",db->data);
+        }
     }
     else
     {
@@ -262,7 +296,10 @@ int doJob(pDatabase db, pRequest req, char *pipe)
         if (!db->inBackground)
             printf("(%s)não implementado\n",pipe);
     }
+    
+    //////////////////
     //Enviar resposta
+    //////////////////
     write(client,&action.idAction,sizeof(int));
     write(client,action.text,sizeof(action.text));
     close(client);
