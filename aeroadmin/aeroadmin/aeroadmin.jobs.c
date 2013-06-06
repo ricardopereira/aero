@@ -53,5 +53,30 @@ int doJob(char *command, char *argv[], int *argc, pRequest req)
                 break;
         }
     }
+    else if (strcmp("addvoo",argv[0]) == 0)
+    {
+        sendRequest(ADMIN,req,command,argv,argc,&resposta);
+        //Resposta
+        switch (resposta.idAction) {
+            case SUCCESS_REQ:
+                printf("%s\n",MSG_COMMANDSUCCESS);
+                break;
+            case FAILED_REQ:
+                printf("%s:\n%s\n",MSG_COMMANDFAILED,resposta.text);
+                break;
+            default:
+                printf("idAction %d não implementado\n",resposta.idAction);
+                break;
+        }
+    }
+    else if (strcmp("lista",argv[0]) == 0)
+    {
+        sendRequest(ADMIN,req,command,argv,argc,&resposta);
+        //Resposta
+        if (resposta.idAction == SUCCESS_REQ)
+        {
+            printf("%s\n",resposta.text);
+        }
+    }
     return 0;
 }

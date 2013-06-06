@@ -28,6 +28,7 @@ int main(int argc, const char * argv[])
     int loggedIn = 0;
     //Ao alterar a lista de comandos, é necessário alterar a constante TOTALCOMMANDS
     char *listCommands[] = {"exit","login","help"};
+    char *listCommandsArgs[] = {"","[password]",""};
     int listCommandsArgc[] = {0,1,0};
     //Request
     req = NULL;
@@ -42,9 +43,8 @@ int main(int argc, const char * argv[])
         if (readCommand(command,commandArgv,&commandArgc) == 1)
             continue;
         //Verificar se o comando existe
-        if (checkCommand(listCommands,listCommandsArgc,TOTALCOMMANDS,commandArgv[0],commandArgc) == 0)
+        if (checkCommand(listCommands,listCommandsArgs,listCommandsArgc,TOTALCOMMANDS,commandArgv[0],commandArgc) == 0)
         {
-            printf("Comando \"%s\" não existe ou argumentos inválidos\n",commandArgv[0]);
             continue;
         }
         

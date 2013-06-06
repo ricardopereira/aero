@@ -145,34 +145,33 @@ pCidade findCidadeByID(pCidade p, int ID)
     return NULL;
 }
 
-void RemoveCity(pDatabase DB,char *nome)
+void removeCidade(pDatabase db, char *nome)
 {
     pCidade auxCidade=NULL;
     pVoo auxVoo=NULL;
     
-    if (DB)
+    if (db)
     {
-        auxCidade = findCidade(DB->cidades, nome);
+        auxCidade = findCidade(db->cidades,nome);
     }
     
     if (auxCidade)
     {
-        auxVoo = findVoobyCity(DB, auxCidade->nome);
+        auxVoo = findVooByCidade(db,auxCidade->nome);
         if (!auxVoo)
         {
-        
             //Se for primeiro elemento
             if (!auxCidade->prev)
             {
                 if (auxCidade->next)
                 {
-                    DB->cidades = auxCidade->next;
+                    db->cidades = auxCidade->next;
                     auxCidade->next->prev = NULL;
                 }
                 else
                 {
-                    DB->cidades = NULL;
-                    DB->lastCidade = NULL;
+                    db->cidades = NULL;
+                    db->lastCidade = NULL;
                 }
             }
             //Ultimo elemento
@@ -188,7 +187,7 @@ void RemoveCity(pDatabase DB,char *nome)
             }
             auxCidade->next = NULL;
             auxCidade->prev = NULL;
-            DB->totalCidades--;
+            db->totalCidades--;
             freeCidades(auxCidade);
         }
         else

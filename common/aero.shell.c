@@ -59,17 +59,33 @@ int readCommand(char *command, char *argv[], int *argc)
         return 1;
 }
 
-int checkCommand(char *validCommands[], int *validArgc, int maxValidCommands, char *command, int argc)
+int checkCommand(char *validCommands[], char *validArgs[], int *validArgc, int maxValidCommands, char *command, int argc)
 {
     int i = 0;
     char *bf;
     bf = validCommands[i];
-    //ToDo: Validar argumentos?
+
     while (bf && i<maxValidCommands)
     {
-        if (strcmp(bf,command) == 0 && validArgc[i] == argc-1)
-            return 1;
+        //Verificar se comando existe
+        if (strcmp(bf,command) == 0)
+        {
+            //Verificar argumentos
+            if (validArgc[i] != argc-1)
+            {
+                if (strcmp(validArgs[i],"") != 0)
+                    //Argumento inválido
+                    printf("Argumentos possíveis para \"%s\": %s\n",command,validArgs[i]);
+                else
+                    //Sem argumentos
+                    printf("Não é necessário argumentos para \"%s\"\n",command);
+                return 0;
+            }
+            else
+                return 1;
+        }
         bf = validCommands[++i];
     }
+    printf("Comando \"%s\" não existe\n",command);
     return 0;
 }

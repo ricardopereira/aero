@@ -10,7 +10,7 @@
 
 pRequest req;
 
-#define TOTALCOMMANDS 8
+#define TOTALCOMMANDS 10
 
 void stopClient(int sinal)
 {
@@ -28,8 +28,9 @@ int main(int argc, const char * argv[])
     int commandArgc = 0;
     int idx, loggedIn = 0;
     //Ao alterar a lista de comandos, é necessário alterar a constante TOTALCOMMANDS
-    char *listCommands[] = {"exit","login","show","help","shutdown","info","addcity","mudadata"};
-    int listCommandsArgc[] = {0,1,0,0,0,0,1,1};
+    char *listCommands[] = {"exit","login","show","help","shutdown","info","addcity","mudadata","addvoo","lista"};
+    char *listCommandsArgs[] = {"","[password]","","","","","[nome]","[dia]","[id] [origem] [destino] [dia]",""};
+    int listCommandsArgc[] = {0,1,0,0,0,0,1,1,4,0};
     //Request
     req = NULL;
     
@@ -50,9 +51,8 @@ int main(int argc, const char * argv[])
         if (readCommand(command,commandArgv,&commandArgc) == 1)
             continue;
         //Verificar se o comando existe
-        if (checkCommand(listCommands,listCommandsArgc,TOTALCOMMANDS,commandArgv[0],commandArgc) == 0)
+        if (checkCommand(listCommands,listCommandsArgs,listCommandsArgc,TOTALCOMMANDS,commandArgv[0],commandArgc) == 0)
         {
-            printf("Comando \"%s\" não existe ou argumentos inválidos\n",commandArgv[0]);
             continue;
         }
         

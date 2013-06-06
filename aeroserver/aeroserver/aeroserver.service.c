@@ -44,7 +44,14 @@ void stopServer(int sinal)
     //Remover named pipe do Servidor
     unlink(SERVER);
     //Gravar DB
-    saveDB(dbName,db);
+    //saveDB(dbName,db);
+    
+    
+    
+    
+    
+    
+    
     //Libertar memória
     if (dbDefault) free(dbName);
     freeDB(db);
@@ -114,22 +121,20 @@ int startServer(int modeBG)
     //Modo Foreground: informação
     if (!db->inBackground)
     {
-        printf("\nUsers:\n");
+        printf("\nUsers (%d):\n",db->totalUsers);
         showUtilizadores(db->users,1);
-        printf("\nCidades:\n");
+        printf("\nCidades (%d):\n",db->totalCidades);
         showCidades(db->cidades);
-        printf("\nVoos:\n");
+        printf("\nVoos (%d):\n",db->totalVoos);
         showVoosDisponiveis(db->voos,0);
         
         //Verificar histórico de voos
         printf("\nVoos ultrapassados:\n");
         checkVoos(db);
         //Voos após a passagem para o histórico
-        printf("\nVoos disponíveis:\n");
+        printf("\nVoos disponíveis (%d):\n",db->totalVoos);
         showVoosDisponiveis(db->voos,0);
     }
-    
-    return 1;
     
     //Sinal para parar o servidor
     signal(SIGUSR1,stopServer);
@@ -298,6 +303,30 @@ int doJob(pDatabase db, pRequest req, char *pipe)
             action.idAction = FAILED_REQ;
             sprintf(action.text," Data do sistema: %d",db->data);
         }
+    }
+    else if (strcmp("lista",commandArgv[0]) == 0 && action.idAction == LOGIN_OK)
+    {
+        action.idAction = SUCCESS_REQ;
+        //Resposta
+        if (db->voos)
+        {
+            strcpy(action.text,"\nVoos disponíveis:");
+            snprintf(action.text,sizeof(action.text),"%s (%d):\n",action.text,db->totalVoos);
+            ptr = db->voos;
+            while (ptr)
+            {
+                snprintf(action.text,sizeof(action.text),"%s %d: ORIGEM %s, DESTINO %s, DIA %d, LUGARES VAGOS: %d\n",action.text,
+                         ((pVoo)ptr)->ID,
+                         ((pVoo)ptr)->cidadeOrigem->nome,
+                         ((pVoo)ptr)->cidadeDestino->nome,
+                         ((pVoo)ptr)->dia,
+                         ((pVoo)ptr)->capacidade-((pVoo)ptr)->ocupacao);
+                
+                ptr = ((pVoo)ptr)->next;
+            }
+        }
+        else
+            strcpy(action.text,"Sem voos disponíveis\n");
     }
     else
     {

@@ -181,45 +181,100 @@ void removePassaporte(pVoo voo, int passaporte)
     }
 }
 
-pVoo findVoobyCity(pDatabase DB, char *Cityname)
+pVoo findVoo(pVoo p, int ID)
+{
+    pVoo auxVoo = p;
+    while (auxVoo)
+    {
+        if (ID == auxVoo->ID)
+            return auxVoo;
+        auxVoo = auxVoo->next;
+    }
+    return NULL;
+}
+
+pVoo findVooByCidade(pDatabase db, char *nomeCidade)
 {
     pDatabase auxDataBase;
     pCidade auxCity;
     pVoo auxVoo;
     
-    auxDataBase = DB;
-    auxCity = findCidade(auxDataBase->cidades, Cityname);
+    auxDataBase = db;
+    auxCity = findCidade(auxDataBase->cidades,nomeCidade);
     if (auxCity)
     {
         auxVoo = auxDataBase->voos;
         while (auxVoo)
         {
-            if (auxVoo->cidadeOrigem == auxCity || auxVoo->cidadeDestino== auxCity)
+            if (auxVoo->cidadeOrigem == auxCity || auxVoo->cidadeDestino == auxCity)
             {
-                return (auxVoo);
+                return auxVoo;
             }
-            
             auxVoo = auxVoo->next;
         }
     }
     return NULL;
 }
 
+void removeVoo(pDatabase db, int ID)
+{
+    pVoo auxVoo = findVoo(db->voos,ID);
+    if (auxVoo)
+    {
+        //Se for primeiro elemento
+        if (!auxVoo->prev)
+        {
+            if (auxVoo->next)
+            {
+                db->voos = auxVoo->next;
+                auxVoo->next->prev = NULL;
+            }
+            else
+            {
+                db->voos = NULL;
+                db->lastVoo = NULL;
+            }
+        }
+        //Ultimo elemento
+        else if (auxVoo->prev && !auxVoo->next)
+        {
+            db->lastVoo = auxVoo->prev;
+            auxVoo->prev->next = NULL;
+        }
+        //Se for elemento interior, sem ser dos extremos
+        else
+        {
+            auxVoo->prev->next = auxVoo->next;
+            auxVoo->next->prev = auxVoo->prev;
+        }
+        auxVoo->next = NULL;
+        auxVoo->prev = NULL;
+        db->totalVoos--;
+        freeVoos(auxVoo);
+    }
+}
+
 void checkVoos(pDatabase db)
 {
     pVoo auxVoo;
+    int auxID;
     auxVoo = db->voos;
     while (auxVoo)
     {
         //Verificar se o voo é passado
         if (auxVoo->dia < db->data)
         {
+            auxID = auxVoo->ID;
             printf("Voo %d, dia %d de origem %s e destino %s com %d passageiros (%d)\n",auxVoo->ID,auxVoo->dia,
                    auxVoo->cidadeOrigem->nome,
                    auxVoo->cidadeDestino->nome,
                    auxVoo->ocupacao,
                    auxVoo->capacidade);
+            auxVoo = auxVoo->next;
+            //Remover voo passado
+            removeVoo(db,auxID);
         }
-        auxVoo = auxVoo->next;
+        else
+            auxVoo = auxVoo->next;
     }
 }
