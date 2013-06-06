@@ -1,0 +1,69 @@
+
+Servidor (aeroserver = server)
+
+   * [ ]testar em linux
+
+   * [ ]script para criar as variáveis de ambiente
+
+   * [ ]verificar a ordem das cidades consoante maiúsculas e minúsculas
+
+   * [ ]ficheiro com a data e alteração da data SODATA
+
+   * [ ]malloc da String?
+
+   * [ ]alterar o tamanho da string de resposta
+
+   * [X]gerir os utilizadores do ficheiro SOAGENTES
+
+   * [ ]criar histórico de cada voo realizado SOHISTORICO
+
+   * [ ]leitura dos ficheiros pelo open, read write, close?
+
+
+
+Administrador (aeroadmin = admin)
+
+   * [ ]em cada pass errada, esperar 5 segundos. após 3 tentativas erradas, espera 5 segundos e termina
+
+   * [ ]adduser: não pode adicionar o "administrador"
+
+   * [ ]logout
+
+   * [ ]help
+
+   * [X]addcity nome (adicionar cidade - 30 cidades no máximo)
+
+   * [ ]delcity nome (remover a cidade - desde que não tenha voos)
+
+   * [ ]seepast (histórico de voos já realizados - ficheiro SOHISTORICO)
+
+   * [ ]addvoo id origem destino dia (adiciona um novo voo)
+
+   * [ ]cancel id (cancel o voo e não vai para histórico)
+
+   * [ ]mudadata dia (muda a data do sistema - data é um inteiro) - os voos que forem lidos inicialmente, são logo verificados se já foram realizados e colocá-los no histórico. quando a data é alterada, verificar se os voos já foram realizados.
+
+   * [ ]getdata (mostra no ecrã a data atual)
+
+   * [ ]info (terminais ligados ao servidor, etc)
+
+   * [ ]adduser username password (adicionar utilizador - 20 dígitos no máximo) - atenção ao admin
+
+
+
+Agente (aeroagent = terminal)
+
+   * [ ]logout
+
+   * [ ]help
+
+   * [ ]mudapass passwordantiga passwordnova (alterar password do utilizado atual)
+
+   * [ ]lista (mostra os voos disponíveis)
+
+   * [ ]pesquisa origem (filtrar voos disponíveis)
+
+   * [ ]marca id num (marcar embarque com o passaporte - voos não realizados)
+
+   * [ ]desmarca id num (desmarcar voo pelo passaporte)
+
