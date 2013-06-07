@@ -14,7 +14,7 @@ int doJob(char *command, char *argv[], int *argc, pRequest req)
     
     if (strcmp(argv[0],"lista") == 0)
     {
-        sendRequestWithExtendedText(pipeName,req,command,argv,argc,&resposta);
+        sendRequestWithExtendedText(pipeName,req,command,&resposta);
     }
     return 0;
 }

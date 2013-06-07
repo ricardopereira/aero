@@ -10,7 +10,7 @@
 
 pRequest req;
 
-#define TOTALCOMMANDS 12
+#define TOTALCOMMANDS 13
 
 void stopClient(int sinal)
 {
@@ -29,15 +29,15 @@ int main(int argc, const char * argv[])
     int idx, loggedIn = 0;
     
     //Ao alterar a lista de comandos, é necessário alterar a constante TOTALCOMMANDS
-    char *listCommands[] = {"exit","help","login","shutdown","info","addcity","mudadata","addvoo","lista",
+    char *listCommands[] = {"exit","help","login","logout","shutdown","info","addcity","mudadata","addvoo","lista",
                             "getdata","cancel","seepast"};
     
     //Argumentos de cada comando
-    char *listCommandsArgs[] = {"","","[password]","","","[nome]","[dia]","[idVoo] [origem] [destino] [dia]","","",
+    char *listCommandsArgs[] = {"","","[password]","","","","[nome]","[dia]","[idVoo] [origem] [destino] [dia]","","",
                                 "[idVoo]",""};
     
     //Número total de argumentos por comando
-    int listCommandsArgc[] = {0,0,1,0,0,1,1,4,0,0,1,0};
+    int listCommandsArgc[] = {0,0,1,0,0,0,1,1,4,0,0,1,0};
     
     //Request
     req = NULL;
@@ -107,9 +107,21 @@ int main(int argc, const char * argv[])
             else
                 printf("Iniciar sessão pelo comando \"login\"\n");
         }
+        else if (strcmp(commandArgv[0],"logout") == 0)
+        {
+            if (doLogout(req))
+            {
+                destroyAdminPipe(req);
+                req = NULL;
+                loggedIn = 0;
+            }
+        }
         else
             doJob(command,commandArgv,&commandArgc,req);
     }
+    //Logout
+    doLogout(req);
+    //Destruir dependências
     destroyAdminPipe(req);
     return 0;
 }

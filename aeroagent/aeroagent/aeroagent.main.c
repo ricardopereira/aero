@@ -9,7 +9,7 @@
 
 pRequest req;
 
-#define TOTALCOMMANDS 4
+#define TOTALCOMMANDS 5
 
 void stopClient(int sinal)
 {
@@ -27,9 +27,9 @@ int main(int argc, const char * argv[])
     int commandArgc = 0;
     int loggedIn = 0;
     //Ao alterar a lista de comandos, é necessário alterar a constante TOTALCOMMANDS
-    char *listCommands[] = {"exit","help","login","lista"};
-    char *listCommandsArgs[] = {"","","[username] [password]",""};
-    int listCommandsArgc[] = {0,0,2,0};
+    char *listCommands[] = {"exit","help","login","logout","lista"};
+    char *listCommandsArgs[] = {"","","[username] [password]","",""};
+    int listCommandsArgc[] = {0,0,2,0,0};
     //Request
     req = NULL;
     
@@ -76,9 +76,21 @@ int main(int argc, const char * argv[])
             else
                 printf("Iniciar sessão pelo comando \"login\"\n");
         }
+        else if (strcmp(commandArgv[0],"logout") == 0)
+        {
+            if (doLogout(req))
+            {
+                destroyClientPipe(req);
+                req = NULL;
+                loggedIn = 0;
+            }
+        }
         else
             doJob(command,commandArgv,&commandArgc,req);
     }
+    //Logout
+    doLogout(req);
+    //Destruir dependências
     destroyClientPipe(req);
     return 0;
 }

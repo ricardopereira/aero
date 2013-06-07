@@ -75,7 +75,7 @@ void sendRequestToServer(pRequest p)
 pRequest doLogin(char *username, char *password)
 {
     pRequest req;
-    int client;
+    int client, isAdmin;
     Action resposta;
     char pipeName[MAXPIPE];
     //Verificar ligação ao servidor
@@ -95,7 +95,8 @@ pRequest doLogin(char *username, char *password)
     
     //Obter resposta do servidor
     resposta.idAction = 0;
-    if (strcmp(username,ADMIN) == 0)
+    isAdmin = strcmp(username,ADMIN) == 0;
+    if (isAdmin)
         sprintf(pipeName,"%s",username);
     else
         sprintf(pipeName,"%d",req->pid);
@@ -121,17 +122,7 @@ pRequest doLogin(char *username, char *password)
     return req;
 }
 
-int doLogout(pRequest req)
-{
-    if (!req) return 0;
-    //Dados para o pedido
-    strcpy(req->command,"logout");
-    //Enviar pedido ao servidor
-    sendRequestToServer(req);
-    return 1;
-}
-
-void sendRequest(char *pipeClient, pRequest req, char *command, char *argv[], int *argc, pAction resp)
+void sendRequest(char *pipeClient, pRequest req, char *command, pAction resp)
 {
     int client, i;
     //Dados para o pedido
@@ -164,25 +155,25 @@ void sendRequest(char *pipeClient, pRequest req, char *command, char *argv[], in
     close(client);
 }
 
-void sendRequestWithStatus(char *pipeClient, pRequest req, char *command, char *argv[], int *argc, pAction resp)
+void sendRequestWithStatus(char *pipeClient, pRequest req, char *command, pAction resp)
 {
-    sendRequest(pipeClient,req,command,argv,argc,resp);
+    sendRequest(pipeClient,req,command,resp);
     //Resposta
     if (resp->idAction == SUCCESS_REQ)
         printf("%s\n",MSG_COMMANDSUCCESS);
 }
 
-void sendRequestWithMessage(char *pipeClient, pRequest req, char *command, char *argv[], int *argc, pAction resp)
+void sendRequestWithMessage(char *pipeClient, pRequest req, char *command, pAction resp)
 {
-    sendRequest(pipeClient,req,command,argv,argc,resp);
+    sendRequest(pipeClient,req,command,resp);
     //Resposta
     if (resp->idAction == SUCCESS_REQ)
         printf("%s\n",resp->message);
 }
 
-void sendRequestWithFail(char *pipeClient, pRequest req, char *command, char *argv[], int *argc, pAction resp)
+void sendRequestWithFail(char *pipeClient, pRequest req, char *command, pAction resp)
 {
-    sendRequest(pipeClient,req,command,argv,argc,resp);
+    sendRequest(pipeClient,req,command,resp);
     //Resposta
     switch (resp->idAction) {
         case SUCCESS_REQ:
@@ -197,10 +188,10 @@ void sendRequestWithFail(char *pipeClient, pRequest req, char *command, char *ar
     }
 }
 
-void sendRequestWithExtendedText(char *pipeClient, pRequest req, char *command, char *argv[], int *argc, pAction resp)
+void sendRequestWithExtendedText(char *pipeClient, pRequest req, char *command, pAction resp)
 {
     int i;
-    sendRequest(pipeClient,req,command,argv,argc,resp);
+    sendRequest(pipeClient,req,command,resp);
     //Resposta
     if (resp->idAction == SUCCESS_REQ)
     {
@@ -213,4 +204,23 @@ void sendRequestWithExtendedText(char *pipeClient, pRequest req, char *command, 
             printf("\n");
         }
     }
+}
+
+int doLogout(pRequest req)
+{
+    Action resposta;
+    char pipeName[MAXPIPE];
+    char command[MAXCOMMAND];
+    int isAdmin;
+    if (!req) return 0;
+    
+    isAdmin = strcmp(req->username,ADMIN) == 0;
+    if (isAdmin)
+        sprintf(pipeName,"%s",req->username);
+    else
+        sprintf(pipeName,"%d",req->pid);
+    
+    strcpy(command,"logout");
+    sendRequestWithMessage(pipeName,req,command,&resposta);
+    return 1;
 }

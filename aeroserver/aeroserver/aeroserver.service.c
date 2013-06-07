@@ -232,15 +232,19 @@ int doJob(pDatabase db, pRequest req, char *pipe)
     {
         if (action.idAction == LOGIN_OK)
         {
+            addClientWithUser(db,req->pid,req->username);
             if (!db->inBackground)
                 printf("(%s)cliente adicionado: %s\n",pipe,req->username);
-            addClientWithUser(db,req->pid,req->username);
         }
         sprintf(action.message,"%s",req->username);
     }
     else if (strcmp("logout",commandArgv[0]) == 0 && action.idAction == LOGIN_OK)
     {
         removeClient(db,req->pid);
+        action.idAction = SUCCESS_REQ;
+        sprintf(action.message,"Logout com sucesso: %s",req->username);
+        if (!db->inBackground)
+            printf("(%s)cliente removido: %s\n",pipe,req->username);
     }
     else if (strcmp("shutdown",commandArgv[0]) == 0 && action.idAction == LOGIN_OK)
     {
@@ -472,11 +476,11 @@ int doLista(pAction action, char *pipe, int client, pDatabase db, char *argv[], 
         auxVoo = db->voos;
         while (auxVoo)
         {
-            snprintf(text,sizeof(text),"%d: ORIGEM %s, DESTINO %s, DIA %d, LUGARES VAGOS: %d\n",
+            snprintf(text,sizeof(text),"%d: DIA %d, ORIGEM %s, DESTINO %s, LUGARES VAGOS: %d\n",
                      auxVoo->ID,
+                     auxVoo->dia,
                      auxVoo->cidadeOrigem->nome,
                      auxVoo->cidadeDestino->nome,
-                     auxVoo->dia,
                      auxVoo->capacidade-auxVoo->ocupacao);
             
             //Escrever para o client
