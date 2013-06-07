@@ -434,7 +434,8 @@ int saveData(const char *path, pDatabase db)
     char data[MAXDATASTR];
     if (!db) return 1;
     //Cria ou substituir ficheiro
-    f = creat(path,(S_IRUSR | S_IWUSR) | (S_IRGRP | S_IWUSR) | (S_IWOTH));
+    
+    f = creat(path,(S_IRUSR | S_IWUSR) | (S_IRGRP | S_IWGRP) | S_IROTH);
     if (f == -1)
     {
         printf("(saveData)Erro: não foi possível criar %s\n",path);

@@ -9,7 +9,6 @@
 int doJob(char *command, char *argv[], int *argc, pRequest req)
 {
     Action resposta;
-    int i;
     
     /**/ if (strcmp("shutdown",argv[0]) == 0)
     {
@@ -41,19 +40,11 @@ int doJob(char *command, char *argv[], int *argc, pRequest req)
     }
     else if (strcmp("lista",argv[0]) == 0)
     {
-        sendRequest(ADMIN,req,command,argv,argc,&resposta);
-        //Resposta
-        if (resposta.idAction == SUCCESS_REQ)
-        {
-            printf("%s",resposta.message);
-            //Verificar resposta extendida
-            if (resposta.hasText)
-            {
-                for (i = 0; i < resposta.totalLines; i++)
-                    printf("%s",resposta.textLines[i]);
-                printf("\n");
-            }
-        }
+        sendRequestWithExtendedText(ADMIN,req,command,argv,argc,&resposta);
+    }
+    else if (strcmp("seepast",argv[0]) == 0)
+    {
+        sendRequestWithExtendedText(ADMIN,req,command,argv,argc,&resposta);
     }
     return 0;
 }

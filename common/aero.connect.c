@@ -196,3 +196,21 @@ void sendRequestWithFail(char *pipeClient, pRequest req, char *command, char *ar
             break;
     }
 }
+
+void sendRequestWithExtendedText(char *pipeClient, pRequest req, char *command, char *argv[], int *argc, pAction resp)
+{
+    int i;
+    sendRequest(pipeClient,req,command,argv,argc,resp);
+    //Resposta
+    if (resp->idAction == SUCCESS_REQ)
+    {
+        printf("%s",resp->message);
+        //Verificar resposta extendida
+        if (resp->hasText)
+        {
+            for (i = 0; i < resp->totalLines; i++)
+                printf("%s",resp->textLines[i]);
+            printf("\n");
+        }
+    }
+}

@@ -1,7 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
+#include <fcntl.h>
 
+#include "aero.common.h"
 #include "aeroserver.common.h"
 #include "aeroserver.cidades.h"
 
@@ -257,7 +260,17 @@ void removeVoo(pDatabase db, int ID)
 void checkVoos(pDatabase db)
 {
     pVoo auxVoo;
-    int auxID;
+    int f, auxID;
+    char text[MAXMESSAGE];
+    
+    //Cria ou abre o ficheiro de histórico de voos
+    f = open(SOHISTORICO,O_CREAT | O_APPEND | O_RDWR, (S_IRUSR | S_IWUSR) | (S_IRGRP | S_IWGRP) | S_IROTH);
+    if (f == -1)
+    {
+        printf("(checkVoos)Erro: não foi possível criar %s\n",SOHISTORICO);
+        return;
+    }
+    
     auxVoo = db->voos;
     while (auxVoo)
     {
@@ -265,11 +278,16 @@ void checkVoos(pDatabase db)
         if (auxVoo->dia < db->data)
         {
             auxID = auxVoo->ID;
-            printf("Voo %d, dia %d de origem %s e destino %s com %d passageiros (%d)\n",auxVoo->ID,auxVoo->dia,
-                   auxVoo->cidadeOrigem->nome,
-                   auxVoo->cidadeDestino->nome,
-                   auxVoo->ocupacao,
-                   auxVoo->capacidade);
+            
+            snprintf(text,MAXMESSAGE,"Voo %d, dia %d de origem %s e destino %s com %d passageiros (%d)\n",auxVoo->ID,
+                     auxVoo->dia,
+                     auxVoo->cidadeOrigem->nome,
+                     auxVoo->cidadeDestino->nome,
+                     auxVoo->ocupacao,
+                     auxVoo->capacidade);
+            
+            write(f,text,sizeof(text));
+            
             auxVoo = auxVoo->next;
             //Remover voo passado
             removeVoo(db,auxID);
@@ -277,4 +295,15 @@ void checkVoos(pDatabase db)
         else
             auxVoo = auxVoo->next;
     }
+    //Modo Foreground: informação
+    if (!db->inBackground)
+    {
+        //Posicionar no início do ficheiro
+        lseek(f,0,SEEK_SET);
+        printf("\nVoos ultrapassados:\n");
+        while (read(f,text,sizeof(text)))
+            printf("%s",text);
+    }
+    
+    close(f);
 }

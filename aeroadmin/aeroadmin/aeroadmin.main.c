@@ -10,7 +10,7 @@
 
 pRequest req;
 
-#define TOTALCOMMANDS 11
+#define TOTALCOMMANDS 12
 
 void stopClient(int sinal)
 {
@@ -30,14 +30,14 @@ int main(int argc, const char * argv[])
     
     //Ao alterar a lista de comandos, é necessário alterar a constante TOTALCOMMANDS
     char *listCommands[] = {"exit","help","login","shutdown","info","addcity","mudadata","addvoo","lista",
-                            "getdata","cancel"};
+                            "getdata","cancel","seepast"};
     
     //Argumentos de cada comando
     char *listCommandsArgs[] = {"","","[password]","","","[nome]","[dia]","[idVoo] [origem] [destino] [dia]","","",
-                                "[idVoo]"};
+                                "[idVoo]",""};
     
     //Número total de argumentos por comando
-    int listCommandsArgc[] = {0,0,1,0,0,1,1,4,0,0,1};
+    int listCommandsArgc[] = {0,0,1,0,0,1,1,4,0,0,1,0};
     
     //Request
     req = NULL;

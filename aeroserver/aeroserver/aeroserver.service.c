@@ -27,6 +27,7 @@ int doCancelVoo(pAction action, char *pipe, pDatabase db, char *argv[], int argc
 int doMudaData(pAction action, char *pipe, pDatabase db, char *argv[], int argc);
 int doGetData(pAction action, char *pipe, pDatabase db, char *argv[], int argc);
 int doLista(pAction action, char *pipe, int client, pDatabase db, char *argv[], int argc);
+int doSeePast(pAction action, char *pipe, int client, pDatabase db, char *argv[], int argc);
 
 void initRequest(pRequest r)
 {
@@ -52,7 +53,14 @@ void stopServer(int sinal)
     //Remover named pipe do Servidor
     unlink(SERVER);
     //Gravar DB
-    saveDB(dbName,db);
+    //saveDB(dbName,db);
+    
+    
+    
+    
+    
+    
+    
     //Libertar memória
     if (dbDefault) free(dbName);
     freeDB(db);
@@ -130,8 +138,8 @@ int startServer(int modeBG)
         showVoosDisponiveis(db->voos,0);
         
         //Verificar histórico de voos
-        printf("\nVoos ultrapassados:\n");
         checkVoos(db);
+        
         //Voos após a passagem para o histórico
         printf("\nVoos disponíveis (%d):\n",db->totalVoos);
         showVoosDisponiveis(db->voos,0);
@@ -293,6 +301,10 @@ int doJob(pDatabase db, pRequest req, char *pipe)
     {
         commandDone = doLista(&action,pipe,client,db,commandArgv,commandArgc);
     }
+    else if (strcmp("seepast",commandArgv[0]) == 0 && action.idAction == LOGIN_OK)
+    {
+        commandDone = doSeePast(&action,pipe,client,db,commandArgv,commandArgc);
+    }
     else
     {
         action.idAction = NOEXIST_REQ;
@@ -418,6 +430,7 @@ int doMudaData(pAction action, char *pipe, pDatabase db, char *argv[], int argc)
     {
         db->data = auxDia;
         saveData(SODATA,db);
+        checkVoos(db);
         action->idAction = SUCCESS_REQ;
     }
     else
@@ -481,4 +494,56 @@ int doLista(pAction action, char *pipe, int client, pDatabase db, char *argv[], 
         strcpy(action->message,"Sem voos disponíveis\n");
         return 0;
     }
+}
+
+int doSeePast(pAction action, char *pipe, int client, pDatabase db, char *argv[], int argc)
+{
+    int f, totalVoos = 0;
+    char text[MAXMESSAGE];
+    
+    //Cria ou abre o ficheiro de histórico de voos
+    f = open(SOHISTORICO,O_RDONLY);
+    if (f == -1)
+    {
+        action->idAction = FAILED_REQ;
+        strcpy(action->message,"Não foi possível obter o histórico de voos\n");
+        return 0;
+    }
+    
+    action->idAction = SUCCESS_REQ;
+    
+    //ToDo - Melhorar esta situação
+    //Verificar o total de voos ultrapassados
+    while (read(f,text,sizeof(text)))
+        totalVoos++;
+    
+    if (!totalVoos)
+    {
+        action->idAction = SUCCESS_REQ;
+        strcpy(action->message,"Sem voos\n");
+        return 0;
+    }
+    
+    //Voltar a posicionar no início do ficheiro
+    lseek(f,0,SEEK_SET);
+    
+    snprintf(action->message,MAXMESSAGE,"\nHistórico de voos (%d):\n",totalVoos);
+    
+    //////////////////
+    //Enviar resposta
+    //////////////////
+    action->hasText = 1;
+    write(client,&action->idAction,sizeof(int));
+    write(client,&action->hasText,sizeof(int));
+    write(client,action->message,sizeof(action->message));
+    //Número de Linhas
+    write(client,&totalVoos,sizeof(int));
+    
+    //Ler voos ultrapassados
+    while (read(f,text,sizeof(text)))
+        //Escrever para o client
+        write(client,text,sizeof(text));
+    
+    close(f);
+    return 1;
 }
