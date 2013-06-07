@@ -32,5 +32,4 @@ struct recAction {
     int idAction;
     char message[255];
     int hasText;
-    char *text[];
 };

@@ -187,11 +187,12 @@ int startServer(int modeBG)
 
 int doJob(pDatabase db, pRequest req, char *pipe)
 {
-    int client, res = 0;
+    int client, i, res = 0;
     Action action;
     void *ptr;
     char *commandArgv[MAXCOMMANDARGS];
     int commandArgc = 0;
+    char text[255], aux;
     
     //Verificar acesso ao pipe do cliente
     if (access(pipe,W_OK) == -1)
@@ -312,7 +313,22 @@ int doJob(pDatabase db, pRequest req, char *pipe)
     //Enviar resposta
     //////////////////
     write(client,&action.idAction,sizeof(int));
+    action.hasText = 1;
+    write(client,&action.hasText,sizeof(int));
     write(client,action.message,sizeof(action.message));
+
+    //Linhas
+    int j = 5;
+    write(client,&j,sizeof(int));
+    //Gravar cada caracter
+    i = 0;
+    while (j)
+    {
+        snprintf(text,sizeof(text),"Valor dos grandes na linha: %d\n",j);
+        write(client,text,sizeof(text));
+        j--;
+    }
+    
     close(client);
     return res;
 }

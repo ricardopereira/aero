@@ -78,7 +78,6 @@ pRequest doLogin(char *username, char *password)
     int client;
     Action resposta;
     char pipeName[MAXPIPE];
-    ssize_t len;
     //Verificar ligação ao servidor
     if (checkServer() == 0)
       return NULL;
@@ -104,8 +103,8 @@ pRequest doLogin(char *username, char *password)
     client = open(pipeName,O_RDONLY);
     //Ler resposta
     read(client,&resposta.idAction,sizeof(int));
-    len = read(client,resposta.message,sizeof(resposta.message)-1);
-    if (len >= 0) resposta.message[len] = 0;
+    read(client,&resposta.hasText,sizeof(int));
+    read(client,resposta.message,sizeof(resposta.message));
     //Tratamento da resposta
     if (resposta.idAction == LOGIN_OK)
     {
@@ -134,8 +133,11 @@ int doLogout(pRequest req)
 
 void sendRequest(char *pipeClient, pRequest req, char *command, char *argv[], int *argc, pAction resp)
 {
-    int client;
-    ssize_t len;
+    int client, i;
+    char text[255];
+    int nrLinhas = 0;
+    char **linhas;
+    
     //Dados para o pedido
     strcpy(req->command,command);
     //Enviar pedido ao servidor
@@ -146,10 +148,29 @@ void sendRequest(char *pipeClient, pRequest req, char *command, char *argv[], in
     client = open(pipeClient,O_RDONLY);
     //Ler resposta
     read(client,&resp->idAction,sizeof(int));
-    len = read(client,resp->message,sizeof(resp->message)-1);
-    if (len >= 0) resp->message[len] = 0;
+    read(client,&resp->hasText,sizeof(int));
+    read(client,resp->message,sizeof(resp->message));
+    
+    //Tem conteúdo extenso para devolver
+    if (resp->hasText)
+    {
+        printf("Has extended text %d\n",resp->hasText);
+        //Número de Linhas
+        read(client,&nrLinhas,sizeof(int));
+        
+        linhas = malloc(nrLinhas * sizeof(char*));
+        for (i = 0; i < nrLinhas; i++)
+        {
+            linhas[i] = malloc(sizeof(text));
+            read(client,linhas[i],sizeof(text));
+        }
+    }
     //Fechar pipe Cliente
     close(client);
+    
+    if (resp->hasText)
+        for (i = 0; i < nrLinhas; i++)
+            printf("%s",linhas[i]);
 }
 
 void sendRequestWithStatus(char *pipeClient, pRequest req, char *command, char *argv[], int *argc, pAction resp)
