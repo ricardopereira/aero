@@ -5,3 +5,6 @@ void destroyClientPipe(pRequest req);
 void destroyAdminPipe(pRequest req);
 pRequest doLogin(char *username, char *password);
 void sendRequest(char *pipeClient, pRequest req, char *command, char *argv[], int *argc, pAction resp);
+void sendRequestWithStatus(char *pipeClient, pRequest req, char *command, char *argv[], int *argc, pAction resp);
+void sendRequestWithMessage(char *pipeClient, pRequest req, char *command, char *argv[], int *argc, pAction resp);
+void sendRequestWithFail(char *pipeClient, pRequest req, char *command, char *argv[], int *argc, pAction resp);

@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include "aeroserver.common.h"
@@ -67,9 +68,27 @@ void upperCase(char *Str, char *newStr)
     int i;
     for (i=0; i<=strlen(Str); i++)
     {
-        if( (Str[i] > 96 ) && (Str[i] < 123) ) //Verifica se é minuscula
-            newStr[i] = Str[i] - 'a' + 'A';   //Transformação
+        if( (Str[i] > 96 ) && (Str[i] < 123)) //Verifica se é minuscula
+            newStr[i] = Str[i] - 'a' + 'A'; //Transformação
         else
             newStr[i] = Str[i]; //Igual
     }
+}
+
+int sameString(const char *a,const char *b)
+{
+    char *strA, *strB;
+    int res;
+    strA = malloc(sizeof(a));
+    if (!strA) return -1;
+    strB = malloc(sizeof(b));
+    if (!strB) return -1;
+    strcpy(strA,a);
+    strcpy(strB,b);
+    upperCase(strA,strA);
+    upperCase(strB,strB);
+    res = strcmp(strA,strB);
+    free(strA);
+    free(strB);
+    return res;
 }

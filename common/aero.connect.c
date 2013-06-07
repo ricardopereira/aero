@@ -104,19 +104,19 @@ pRequest doLogin(char *username, char *password)
     client = open(pipeName,O_RDONLY);
     //Ler resposta
     read(client,&resposta.idAction,sizeof(int));
-    len = read(client,resposta.text,sizeof(resposta.text)-1);
-    if (len >= 0) resposta.text[len] = 0;
+    len = read(client,resposta.message,sizeof(resposta.message)-1);
+    if (len >= 0) resposta.message[len] = 0;
     //Tratamento da resposta
     if (resposta.idAction == LOGIN_OK)
     {
-        printf("Sessão iniciada: %s\n",resposta.text);
+        printf("Sessão iniciada: %s\n",resposta.message);
     }
     else
     {
         unlink(pipeName);
         free(req);
         req = NULL;
-        printf("Login inválido: %s\n",resposta.text);
+        printf("Login inválido: %s\n",resposta.message);
     }
     close(client);
     return req;
@@ -146,8 +146,41 @@ void sendRequest(char *pipeClient, pRequest req, char *command, char *argv[], in
     client = open(pipeClient,O_RDONLY);
     //Ler resposta
     read(client,&resp->idAction,sizeof(int));
-    len = read(client,resp->text,sizeof(resp->text)-1);
-    if (len >= 0) resp->text[len] = 0;
+    len = read(client,resp->message,sizeof(resp->message)-1);
+    if (len >= 0) resp->message[len] = 0;
     //Fechar pipe Cliente
     close(client);
+}
+
+void sendRequestWithStatus(char *pipeClient, pRequest req, char *command, char *argv[], int *argc, pAction resp)
+{
+    sendRequest(pipeClient,req,command,argv,argc,resp);
+    //Resposta
+    if (resp->idAction == SUCCESS_REQ)
+        printf("%s\n",MSG_COMMANDSUCCESS);
+}
+
+void sendRequestWithMessage(char *pipeClient, pRequest req, char *command, char *argv[], int *argc, pAction resp)
+{
+    sendRequest(pipeClient,req,command,argv,argc,resp);
+    //Resposta
+    if (resp->idAction == SUCCESS_REQ)
+        printf("%s\n",resp->message);
+}
+
+void sendRequestWithFail(char *pipeClient, pRequest req, char *command, char *argv[], int *argc, pAction resp)
+{
+    sendRequest(pipeClient,req,command,argv,argc,resp);
+    //Resposta
+    switch (resp->idAction) {
+        case SUCCESS_REQ:
+            printf("%s\n",MSG_COMMANDSUCCESS);
+            break;
+        case FAILED_REQ:
+            printf("%s:\n %s\n",MSG_COMMANDFAILED,resp->message);
+            break;
+        default:
+            printf("idAction %d não implementado\n",resp->idAction);
+            break;
+    }
 }

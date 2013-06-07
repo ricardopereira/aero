@@ -30,5 +30,7 @@ struct recRequest {
 
 struct recAction {
     int idAction;
-    char text[1024];
+    char message[255];
+    int hasText;
+    char *text[];
 };

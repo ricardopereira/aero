@@ -125,7 +125,7 @@ pCidade findCidade(pCidade p, char *nome)
     auxCidade = p;
     while (auxCidade)
     {
-        if (strcmp(nome,auxCidade->nome) == 0)
+        if (sameString(nome,auxCidade->nome) == 0)
             return auxCidade;
         auxCidade = auxCidade->next;
     }

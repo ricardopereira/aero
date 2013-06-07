@@ -10,7 +10,7 @@
 
 pRequest req;
 
-#define TOTALCOMMANDS 10
+#define TOTALCOMMANDS 11
 
 void stopClient(int sinal)
 {
@@ -27,10 +27,18 @@ int main(int argc, const char * argv[])
     char *commandArgv[MAXCOMMANDARGS];
     int commandArgc = 0;
     int idx, loggedIn = 0;
+    
     //Ao alterar a lista de comandos, é necessário alterar a constante TOTALCOMMANDS
-    char *listCommands[] = {"exit","login","show","help","shutdown","info","addcity","mudadata","addvoo","lista"};
-    char *listCommandsArgs[] = {"","[password]","","","","","[nome]","[dia]","[id] [origem] [destino] [dia]",""};
-    int listCommandsArgc[] = {0,1,0,0,0,0,1,1,4,0};
+    char *listCommands[] = {"exit","help","login","shutdown","info","addcity","mudadata","addvoo","lista",
+                            "getdata","cancel"};
+    
+    //Argumentos de cada comando
+    char *listCommandsArgs[] = {"","","[password]","","","[nome]","[dia]","[idVoo] [origem] [destino] [dia]","","",
+                                "[idVoo]"};
+    
+    //Número total de argumentos por comando
+    int listCommandsArgc[] = {0,0,1,0,0,1,1,4,0,0,1};
+    
     //Request
     req = NULL;
     
@@ -70,9 +78,8 @@ int main(int argc, const char * argv[])
         }
         else if (strcmp(commandArgv[0],"help") == 0)
         {
-            //ToDo
             printf("Comandos disponíveis:\n");
-            printf(" close - fechar a aplicação\n");
+            showCommandList(listCommands,listCommandsArgs,listCommandsArgc,TOTALCOMMANDS);
         }
         else if (!loggedIn)
         {

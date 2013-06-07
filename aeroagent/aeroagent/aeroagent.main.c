@@ -9,7 +9,7 @@
 
 pRequest req;
 
-#define TOTALCOMMANDS 3
+#define TOTALCOMMANDS 4
 
 void stopClient(int sinal)
 {
@@ -27,9 +27,9 @@ int main(int argc, const char * argv[])
     int commandArgc = 0;
     int loggedIn = 0;
     //Ao alterar a lista de comandos, é necessário alterar a constante TOTALCOMMANDS
-    char *listCommands[] = {"exit","login","help"};
-    char *listCommandsArgs[] = {"","[password]",""};
-    int listCommandsArgc[] = {0,1,0};
+    char *listCommands[] = {"exit","help","login","lista"};
+    char *listCommandsArgs[] = {"","","[username] [password]",""};
+    int listCommandsArgc[] = {0,0,2,0};
     //Request
     req = NULL;
     
@@ -53,9 +53,8 @@ int main(int argc, const char * argv[])
             break;
         else if (strcmp(commandArgv[0],"help") == 0)
         {
-            //ToDo
             printf("Comandos disponíveis:\n");
-            printf(" close - fechar a aplicação\n");
+            showCommandList(listCommands,listCommandsArgs,listCommandsArgc,TOTALCOMMANDS);
         }
         else if (!loggedIn)
         {

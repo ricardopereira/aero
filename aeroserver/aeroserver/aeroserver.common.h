@@ -78,4 +78,7 @@ void showCidades(pCidade p);
 void showVoosDisponiveis(pVoo p, int showPassaportes);
 void showUtilizadores(pUser p, int showPassword);
 void showClientesLigados(pClient p);
+
+//Tools
 void upperCase(char *Str, char *newStr);
+int sameString(const char *a,const char *b);

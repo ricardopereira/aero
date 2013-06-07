@@ -89,3 +89,18 @@ int checkCommand(char *validCommands[], char *validArgs[], int *validArgc, int m
     printf("Comando \"%s\" não existe\n",command);
     return 0;
 }
+
+void showCommandList(char *validCommands[], char *validArgs[], int *validArgc, int maxValidCommands)
+{
+    int i = 0;
+    char *bf;
+    bf = validCommands[i];
+    while (bf && i<maxValidCommands)
+    {
+        if (validArgc[i])
+            printf(" %s : %s (%d)\n",bf,validArgs[i],validArgc[i]);
+        else
+            printf(" %s\n",bf);
+        bf = validCommands[++i];
+    }
+}
