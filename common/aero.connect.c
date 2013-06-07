@@ -134,10 +134,6 @@ int doLogout(pRequest req)
 void sendRequest(char *pipeClient, pRequest req, char *command, char *argv[], int *argc, pAction resp)
 {
     int client, i;
-    char text[255];
-    int nrLinhas = 0;
-    char **linhas;
-    
     //Dados para o pedido
     strcpy(req->command,command);
     //Enviar pedido ao servidor
@@ -154,23 +150,18 @@ void sendRequest(char *pipeClient, pRequest req, char *command, char *argv[], in
     //Tem conteúdo extenso para devolver
     if (resp->hasText)
     {
-        printf("Has extended text %d\n",resp->hasText);
         //Número de Linhas
-        read(client,&nrLinhas,sizeof(int));
+        read(client,&resp->totalLines,sizeof(int));
         
-        linhas = malloc(nrLinhas * sizeof(char*));
-        for (i = 0; i < nrLinhas; i++)
+        resp->textLines = malloc(sizeof(char*) * resp->totalLines);
+        for (i = 0; i < resp->totalLines; i++)
         {
-            linhas[i] = malloc(sizeof(text));
-            read(client,linhas[i],sizeof(text));
+            resp->textLines[i] = malloc(sizeof(char) * MAXMESSAGE);
+            read(client,resp->textLines[i],sizeof(char) * MAXMESSAGE);
         }
     }
     //Fechar pipe Cliente
     close(client);
-    
-    if (resp->hasText)
-        for (i = 0; i < nrLinhas; i++)
-            printf("%s",linhas[i]);
 }
 
 void sendRequestWithStatus(char *pipeClient, pRequest req, char *command, char *argv[], int *argc, pAction resp)

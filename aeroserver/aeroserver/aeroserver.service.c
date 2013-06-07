@@ -20,13 +20,13 @@ char *dbName;
 
 void shutdownClients(pDatabase db);
 
-//COMANDOS
 int doJob(pDatabase db, pRequest req, char *pipe);
-void doAddVoo(pAction action, char *pipe, pDatabase db, char *argv[], int argc);
-void doCancelVoo(pAction action, char *pipe, pDatabase db, char *argv[], int argc);
-void doMudaData(pAction action, char *pipe, pDatabase db, char *argv[], int argc);
-void doGetData(pAction action, char *pipe, pDatabase db, char *argv[], int argc);
-void doLista(pAction action, char *pipe, pDatabase db, char *argv[], int argc);
+//COMANDOS
+int doAddVoo(pAction action, char *pipe, pDatabase db, char *argv[], int argc);
+int doCancelVoo(pAction action, char *pipe, pDatabase db, char *argv[], int argc);
+int doMudaData(pAction action, char *pipe, pDatabase db, char *argv[], int argc);
+int doGetData(pAction action, char *pipe, pDatabase db, char *argv[], int argc);
+int doLista(pAction action, char *pipe, int client, pDatabase db, char *argv[], int argc);
 
 void initRequest(pRequest r)
 {
@@ -52,14 +52,7 @@ void stopServer(int sinal)
     //Remover named pipe do Servidor
     unlink(SERVER);
     //Gravar DB
-    //saveDB(dbName,db);
-    
-    
-    
-    
-    
-    
-    
+    saveDB(dbName,db);
     //Libertar memória
     if (dbDefault) free(dbName);
     freeDB(db);
@@ -187,12 +180,11 @@ int startServer(int modeBG)
 
 int doJob(pDatabase db, pRequest req, char *pipe)
 {
-    int client, i, res = 0;
+    int client, res = 0, commandDone;
     Action action;
     void *ptr;
     char *commandArgv[MAXCOMMANDARGS];
     int commandArgc = 0;
-    char text[255], aux;
     
     //Verificar acesso ao pipe do cliente
     if (access(pipe,W_OK) == -1)
@@ -219,6 +211,7 @@ int doJob(pDatabase db, pRequest req, char *pipe)
     //Interpretar os argumentos
     getCommandArgs(req->command,commandArgv,&commandArgc);
     
+    commandDone = 0;
     ///////////
     //COMANDOS
     ///////////
@@ -282,23 +275,23 @@ int doJob(pDatabase db, pRequest req, char *pipe)
     }
     else if (strcmp("addvoo",commandArgv[0]) == 0 && action.idAction == LOGIN_OK && commandArgc == 5)
     {
-        doAddVoo(&action,pipe,db,commandArgv,commandArgc);
+        commandDone = doAddVoo(&action,pipe,db,commandArgv,commandArgc);
     }
     else if (strcmp("cancel",commandArgv[0]) == 0 && action.idAction == LOGIN_OK && commandArgc == 2)
     {
-        doCancelVoo(&action,pipe,db,commandArgv,commandArgc);
+        commandDone = doCancelVoo(&action,pipe,db,commandArgv,commandArgc);
     }
     else if (strcmp("mudadata",commandArgv[0]) == 0 && action.idAction == LOGIN_OK && commandArgc == 2)
     {
-        doMudaData(&action,pipe,db,commandArgv,commandArgc);
+        commandDone = doMudaData(&action,pipe,db,commandArgv,commandArgc);
     }
     else if (strcmp("getdata",commandArgv[0]) == 0 && action.idAction == LOGIN_OK)
     {
-        doGetData(&action,pipe,db,commandArgv,commandArgc);
+        commandDone = doGetData(&action,pipe,db,commandArgv,commandArgc);
     }
     else if (strcmp("lista",commandArgv[0]) == 0 && action.idAction == LOGIN_OK)
     {
-        doLista(&action,pipe,db,commandArgv,commandArgc);
+        commandDone = doLista(&action,pipe,client,db,commandArgv,commandArgc);
     }
     else
     {
@@ -309,27 +302,17 @@ int doJob(pDatabase db, pRequest req, char *pipe)
             printf("(%s)não implementado\n",pipe);
     }
     
-    //////////////////
-    //Enviar resposta
-    //////////////////
-    write(client,&action.idAction,sizeof(int));
-    action.hasText = 1;
-    write(client,&action.hasText,sizeof(int));
-    write(client,action.message,sizeof(action.message));
-
-    //Linhas
-    int j = 5;
-    write(client,&j,sizeof(int));
-    //Gravar cada caracter
-    i = 0;
-    while (j)
+    if (!commandDone)
     {
-        snprintf(text,sizeof(text),"Valor dos grandes na linha: %d\n",j);
-        write(client,text,sizeof(text));
-        j--;
+        //////////////////
+        //Enviar resposta
+        //////////////////
+        action.hasText = 0;
+        write(client,&action.idAction,sizeof(int));
+        write(client,&action.hasText,sizeof(int));
+        write(client,action.message,sizeof(action.message));
+        close(client);
     }
-    
-    close(client);
     return res;
 }
 
@@ -348,7 +331,7 @@ void shutdownClients(pDatabase db)
 // Comandos
 ////////////
 
-void doAddVoo(pAction action, char *pipe, pDatabase db, char *argv[], int argc)
+int doAddVoo(pAction action, char *pipe, pDatabase db, char *argv[], int argc)
 {
     pCidade auxCidadeOrigem, auxCidadeDestino;
     int auxID, auxDia;
@@ -359,7 +342,7 @@ void doAddVoo(pAction action, char *pipe, pDatabase db, char *argv[], int argc)
     if (!auxID)
     {
         sprintf(action->message,"ID do voo não pode ser nulo");
-        return;
+        return 0;
     }
     //Verificar se já existe
     if (findVoo(db->voos,auxID))
@@ -374,20 +357,20 @@ void doAddVoo(pAction action, char *pipe, pDatabase db, char *argv[], int argc)
         if (!auxCidadeOrigem)
         {
             sprintf(action->message,"Cidade origem \"%s\" não existe",argv[2]);
-            return;
+            return 0;
         }
         auxCidadeDestino = findCidade(db->cidades,argv[3]);
         if (!auxCidadeDestino)
         {
             sprintf(action->message,"Cidade destino \"%s\" não existe",argv[3]);
-            return;
+            return 0;
         }
         //Dia (Data)
         auxDia = atoi(argv[4]);
         if (!auxDia || auxDia < db->data)
         {
             sprintf(action->message,"É necessário especificar um dia superior a %d",db->data);
-            return;
+            return 0;
         }
         
         //Adiciona o voo
@@ -395,9 +378,10 @@ void doAddVoo(pAction action, char *pipe, pDatabase db, char *argv[], int argc)
         //Com sucesso
         action->idAction = SUCCESS_REQ;
     }
+    return 0;
 }
 
-void doCancelVoo(pAction action, char *pipe, pDatabase db, char *argv[], int argc)
+int doCancelVoo(pAction action, char *pipe, pDatabase db, char *argv[], int argc)
 {
     int auxID;
     
@@ -407,7 +391,7 @@ void doCancelVoo(pAction action, char *pipe, pDatabase db, char *argv[], int arg
     if (!auxID)
     {
         sprintf(action->message,"ID do voo não pode ser nulo");
-        return;
+        return 0;
     }
     //Verificar se já existe
     if (!findVoo(db->voos,auxID))
@@ -421,9 +405,10 @@ void doCancelVoo(pAction action, char *pipe, pDatabase db, char *argv[], int arg
         removeVoo(db,auxID);
         action->idAction = SUCCESS_REQ;
     }
+    return 0;
 }
 
-void doMudaData(pAction action, char *pipe, pDatabase db, char *argv[], int argc)
+int doMudaData(pAction action, char *pipe, pDatabase db, char *argv[], int argc)
 {
     int auxDia;
     //Dia (Data)
@@ -440,36 +425,60 @@ void doMudaData(pAction action, char *pipe, pDatabase db, char *argv[], int argc
         action->idAction = FAILED_REQ;
         sprintf(action->message,"Data atual do sistema: %d",db->data);
     }
+    return 0;
 }
 
-void doGetData(pAction action, char *pipe, pDatabase db, char *argv[], int argc)
+int doGetData(pAction action, char *pipe, pDatabase db, char *argv[], int argc)
 {
     action->idAction = SUCCESS_REQ;
     sprintf(action->message,"Data atual do sistema: %d",db->data);
+    return 0;
 }
 
-void doLista(pAction action, char *pipe, pDatabase db, char *argv[], int argc)
+int doLista(pAction action, char *pipe, int client, pDatabase db, char *argv[], int argc)
 {
     pVoo auxVoo;
+    char text[MAXMESSAGE];
+    
     action->idAction = SUCCESS_REQ;
     //Resposta
     if (db->voos)
     {
-        strcpy(action->message,"\nVoos disponíveis");
-        snprintf(action->message,sizeof(action->message),"%s (%d):\n",action->message,db->totalVoos);
+        snprintf(action->message,MAXMESSAGE,"\nVoos disponíveis (%d):\n",db->totalVoos);
+        
+        //////////////////
+        //Enviar resposta
+        //////////////////
+        action->hasText = 1;
+        write(client,&action->idAction,sizeof(int));
+        write(client,&action->hasText,sizeof(int));
+        write(client,action->message,sizeof(action->message));
+        //Número de Linhas
+        write(client,&db->totalVoos,sizeof(int));
+        
         auxVoo = db->voos;
         while (auxVoo)
         {
-            snprintf(action->message,sizeof(action->message),"%s %d: ORIGEM %s, DESTINO %s, DIA %d, LUGARES VAGOS: %d\n",action->message,
+            snprintf(text,sizeof(text),"%d: ORIGEM %s, DESTINO %s, DIA %d, LUGARES VAGOS: %d\n",
                      auxVoo->ID,
                      auxVoo->cidadeOrigem->nome,
                      auxVoo->cidadeDestino->nome,
                      auxVoo->dia,
                      auxVoo->capacidade-auxVoo->ocupacao);
             
+            //Escrever para o client
+            write(client,text,sizeof(text));
+            
             auxVoo = auxVoo->next;
         }
+
+        close(client);
+        //Resposta enviada
+        return 1;
     }
     else
+    {
         strcpy(action->message,"Sem voos disponíveis\n");
+        return 0;
+    }
 }

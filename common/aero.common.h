@@ -5,6 +5,7 @@
 #define MAXCOMMAND 50
 #define MAXCOMMANDARGS 5
 #define MAXPIPE 15
+#define MAXMESSAGE 255
 //Actions
 #define SUCCESS_REQ 1
 #define NOEXIST_REQ 2
@@ -30,6 +31,9 @@ struct recRequest {
 
 struct recAction {
     int idAction;
-    char message[255];
+    char message[MAXMESSAGE];
+    //Extended Text
     int hasText;
+    int totalLines;
+    char **textLines;
 };
