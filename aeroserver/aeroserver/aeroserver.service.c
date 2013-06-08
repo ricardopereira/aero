@@ -62,14 +62,7 @@ void stopServer(int sinal)
     //Remover named pipe do Servidor
     unlink(SERVER);
     //Gravar DB
-    //saveDB(dbName,db);
-    
-    
-    
-    
-    
-    
-    
+    saveDB(dbName,db);
     //Libertar memória
     if (dbDefault) free(dbName);
     freeDB(db);
@@ -210,6 +203,9 @@ int doJob(pDatabase db, pRequest req, char *pipe)
         return NOACCESS;
     }
     
+    //Interpretar os argumentos
+    getCommandArgs(req->command,commandArgv,&commandArgc);
+    
     //Inicializar dados de resposta
     initAction(&action);
     //Verificar credenciais
@@ -226,9 +222,9 @@ int doJob(pDatabase db, pRequest req, char *pipe)
     }
     
     //Se o login falhou, então aborta a operação
-    if (action.idAction == LOGIN_FAILED)
+    if (action.idAction == LOGIN_FAILED && strcmp("login",commandArgv[0]) != 0)
     {
-        snprintf(action.message,MAXMESSAGE,"login failed to \"%s\"",req->username);
+        snprintf(action.message,MAXMESSAGE,"Login inválido: %s",req->username);
         action.hasText = 0;
         write(client,&action.idAction,sizeof(int));
         write(client,&action.hasText,sizeof(int));
@@ -236,9 +232,6 @@ int doJob(pDatabase db, pRequest req, char *pipe)
         close(client);
         return NOACCESS;
     }
-    
-    //Interpretar os argumentos
-    getCommandArgs(req->command,commandArgv,&commandArgc);
     
     commandDone = 0;
     ///////////
