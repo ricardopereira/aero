@@ -8,7 +8,7 @@ void removeVoo(pDatabase db, int ID);
 void checkVoos(pDatabase db);
 
 void initPassaportes(pVoo voo);
-void addPassaporte(pVoo voo, int passaporte);
-void removePassaporte(pVoo voo, int passaporte);
+int addPassaporte(pVoo voo, int passaporte);
+int removePassaporte(pVoo voo, int passaporte);
 
 void freeVoos(pVoo p);

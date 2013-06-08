@@ -144,7 +144,7 @@ int startServer(int modeBG)
         printf("\nCidades (%d):\n",db->totalCidades);
         showCidades(db->cidades);
         printf("\nVoos (%d):\n",db->totalVoos);
-        showVoosDisponiveis(db->voos,0);
+        showVoosDisponiveis(db->voos,1);
         
         //Verificar histórico de voos
         checkVoos(db);
@@ -853,10 +853,95 @@ int doPesquisaVoos(pAction action, char *pipe, int client, pDatabase db, char *a
 
 int doMarcaViagem(pAction action, char *pipe, pDatabase db, char *argv[], int argc)
 {
+    int auxID, auxNumPassaporte, res;
+    pVoo auxVoo = NULL;
+    action->idAction = FAILED_REQ;
+    
+    //ID do Voo
+    auxID = atoi(argv[1]);
+    if (auxID == 0)
+    {
+        sprintf(action->message,"ID \"%s\" do voo não é válido",argv[1]);
+        return 0;
+    }
+    //Número do Passaporte
+    auxNumPassaporte = atoi(argv[2]);
+    if (auxNumPassaporte == 0)
+    {
+        sprintf(action->message,"Passaporte \"%s\" não é válido",argv[2]);
+        return 0;
+    }
+    
+    auxVoo = findVoo(db->voos,auxID);
+    if (!auxVoo)
+    {
+        sprintf(action->message,"Voo \"%d\" não existe",auxID);
+    }
+    else
+    {
+        res = addPassaporte(auxVoo,auxNumPassaporte);
+        switch (res) {
+            case 0: //0 - Adicionado com sucesso
+                action->idAction = SUCCESS_REQ;
+                break;
+            case 1: //1 - Já existe o passaporte
+                sprintf(action->message,"Passaporte \"%d\" já existe",auxNumPassaporte);
+                break;
+            case 2: //2 - Voo não tem capacidade
+                sprintf(action->message,"Voo \"%d\" está sobrelotado",auxID);
+                break;
+            case 3: //3 - Número do passaporte não pode ser nulo
+                sprintf(action->message,"Passaporte não pode ser nulo");
+                break;
+            default:
+                break;
+        }
+    }
     return 0;
 }
 
 int doDesmarcaViagem(pAction action, char *pipe, pDatabase db, char *argv[], int argc)
-{
+{    
+    int auxID, auxNumPassaporte, res;
+    pVoo auxVoo = NULL;
+    action->idAction = FAILED_REQ;
+    
+    //ID do Voo
+    auxID = atoi(argv[1]);
+    if (auxID == 0)
+    {
+        sprintf(action->message,"ID \"%s\" do voo não é válido",argv[1]);
+        return 0;
+    }
+    //Número do Passaporte
+    auxNumPassaporte = atoi(argv[2]);
+    if (auxNumPassaporte == 0)
+    {
+        sprintf(action->message,"Passaporte \"%s\" não é válido",argv[2]);
+        return 0;
+    }
+    
+    auxVoo = findVoo(db->voos,auxID);
+    if (!auxVoo)
+    {
+        sprintf(action->message,"Voo \"%d\" não existe",auxID);
+    }
+    else
+    {
+        res = removePassaporte(auxVoo,auxNumPassaporte);
+        switch (res) {
+            case 0: //0 - Não foi removido / não existir o passaporte
+                sprintf(action->message,"Passaporte \"%d\" não existe",auxNumPassaporte);
+                break;
+            case 1: //1 - Removido com sucesso
+                action->idAction = SUCCESS_REQ;
+                break;
+            case 2: //2 - Número do passaporte não pode ser nulo
+                sprintf(action->message,"Passaporte não pode ser nulo");
+                break;
+            default:
+                break;
+        }
+    }
     return 0;
 }

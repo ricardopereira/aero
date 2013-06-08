@@ -135,30 +135,44 @@ pVoo newVoo(pDatabase db, char *origem, char *destino, int dia)
     return addVoo(db,cidadeOrigem,cidadeDestino,dia);
 }
 
-void addPassaporte(pVoo voo, int passaporte)
+int addPassaporte(pVoo voo, int passaporte)
 {
     int i;
-    if (!voo) return;
-    if (!voo->passaportes) return;
-    if (passaporte <= 0) return;
+    
+    //Resultados:
+    //0 - Adicionado com sucesso
+    //1 - Já existe o passaporte
+    //2 - Voo não tem capacidade
+    //3 - Número do passaporte não pode ser nulo
+    
+    if (!voo) return 3;
+    if (!voo->passaportes) return 3;
+    if (passaporte <= 0) return 3;
     
     //Verificar se já existe
     for (i=0; i<voo->capacidade; i++)
         if (voo->passaportes[i] == passaporte)
-            return;
+            return 1;
     //Verificar se tem capacidade para o passageiro
     if (voo->ocupacao + 1 > voo->capacidade)
-        return;
+        return 2;
     //Adicionar
     voo->passaportes[voo->ocupacao++] = passaporte;
+    return 0;
 }
 
-void removePassaporte(pVoo voo, int passaporte)
+int removePassaporte(pVoo voo, int passaporte)
 {
     int i, removed = 0;
-    if (!voo) return;
-    if (!voo->passaportes) return;
-    if (passaporte <= 0) return;
+    
+    //Resultados:
+    //0 - Não foi removido / não existir o passaporte
+    //1 - Removido com sucesso
+    //2 - Número do passaporte não pode ser nulo
+    
+    if (!voo) return 2;
+    if (!voo->passaportes) return 2;
+    if (passaporte <= 0) return 2;
     
     //Verificar se já existe
     for (i=0; i<voo->capacidade; i++)
@@ -176,12 +190,16 @@ void removePassaporte(pVoo voo, int passaporte)
         {
             voo->passaportes[i-1] = voo->passaportes[i];
         }
+        
+        //Dá sinal para remover
         if (voo->passaportes[i] == passaporte)
         {
             voo->passaportes[i] = 0;
+            voo->ocupacao--;
             removed = 1;
         }
     }
+    return removed;
 }
 
 pVoo findVoo(pVoo p, int ID)
