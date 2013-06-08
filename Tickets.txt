@@ -5,39 +5,10 @@ Servidor (aeroserver = server)
 
    * [ ]script para criar as variáveis de ambiente
 
-   * [ ]verificar a ordem das cidades consoante maiúsculas e minúsculas
-
    * [ ]malloc da String?
-
-   * [X]gerir os utilizadores do ficheiro SOAGENTES
-
 
 
 Administrador (aeroadmin = admin)
 
-   * [ ]em cada pass errada, esperar 5 segundos. após 3 tentativas erradas, espera 5 segundos e termina
-
-   * [ ]adduser: não pode adicionar o "administrador"
-
-   * [ ]logout
-
-   * [X]addcity nome (adicionar cidade - 30 cidades no máximo)
-
-   * [ ]delcity nome (remover a cidade - desde que não tenha voos)
-
-   * [ ]adduser username password (adicionar utilizador - 20 dígitos no máximo) - atenção ao admin
-
-
-
 Agente (aeroagent = terminal)
-
-   * [ ]logout
-
-   * [ ]mudapass passwordantiga passwordnova (alterar password do utilizado atual)
-
-   * [ ]pesquisa origem (filtrar voos disponíveis)
-
-   * [ ]marca id num (marcar embarque com o passaporte - voos não realizados)
-
-   * [ ]desmarca id num (desmarcar voo pelo passaporte)
 
