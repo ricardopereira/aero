@@ -22,12 +22,17 @@ void shutdownClients(pDatabase db);
 
 int doJob(pDatabase db, pRequest req, char *pipe);
 //COMANDOS
+int doInfo(pAction action, char *pipe, int client, pDatabase db, char *argv[], int argc);
 int doAddVoo(pAction action, char *pipe, pDatabase db, char *argv[], int argc);
 int doCancelVoo(pAction action, char *pipe, pDatabase db, char *argv[], int argc);
 int doMudaData(pAction action, char *pipe, pDatabase db, char *argv[], int argc);
 int doGetData(pAction action, char *pipe, pDatabase db, char *argv[], int argc);
 int doLista(pAction action, char *pipe, int client, pDatabase db, char *argv[], int argc);
 int doSeePast(pAction action, char *pipe, int client, pDatabase db, char *argv[], int argc);
+int doAddUser(pAction action, char *pipe, pDatabase db, char *argv[], int argc);
+int doDelUser(pAction action, char *pipe, pDatabase db, char *argv[], int argc);
+int doAddCity(pAction action, char *pipe, pDatabase db, char *argv[], int argc);
+int doDelCity(pAction action, char *pipe, pDatabase db, char *argv[], int argc);
 
 void initRequest(pRequest r)
 {
@@ -143,6 +148,7 @@ int startServer(int modeBG)
         //Voos após a passagem para o histórico
         printf("\nVoos disponíveis (%d):\n",db->totalVoos);
         showVoosDisponiveis(db->voos,0);
+        printf("\n");
     }
     
     //Sinal para parar o servidor
@@ -190,7 +196,6 @@ int doJob(pDatabase db, pRequest req, char *pipe)
 {
     int client, res = 0, commandDone;
     Action action;
-    void *ptr;
     char *commandArgv[MAXCOMMANDARGS];
     int commandArgc = 0;
     
@@ -215,6 +220,9 @@ int doJob(pDatabase db, pRequest req, char *pipe)
         if (action.idAction == LOGIN_FAILED)
             printf("(%s)falhou login: %s\nabort\n",pipe,req->username);
     }
+    
+    if (action.idAction == LOGIN_FAILED)
+        return NOACCESS;
     
     //Interpretar os argumentos
     getCommandArgs(req->command,commandArgv,&commandArgc);
@@ -254,36 +262,15 @@ int doJob(pDatabase db, pRequest req, char *pipe)
     }
     else if (strcmp("info",commandArgv[0]) == 0 && action.idAction == LOGIN_OK)
     {
-        action.idAction = SUCCESS_REQ;
-        //Resposta
-        if (db->clients)
-        {
-            strcpy(action.message,"\nINFORMAÇÃO DO SISTEMA:\n");
-            snprintf(action.message,sizeof(action.message),"%sData actual: %d\n",action.message,db->data);
-            snprintf(action.message,sizeof(action.message),"%sTotal de utilizadores: %d\n",action.message,db->totalUsers);
-            snprintf(action.message,sizeof(action.message),"%sTotal de cidades: %d\n",action.message,db->totalCidades);
-            snprintf(action.message,sizeof(action.message),"%sTotal de voos disponíveis: %d\n",action.message,db->totalVoos);
-
-            snprintf(action.message,sizeof(action.message),"%sClientes activos (%d):\n",action.message,db->totalClients);
-            ptr = db->clients;
-            while (ptr)
-            {
-                snprintf(action.message,sizeof(action.message),"%s %d - %s\n",action.message,
-                         ((pClient)ptr)->pid,getClientUsername((pClient)ptr));
-                
-                ptr = ((pClient)ptr)->next;
-            }
-        }
+        commandDone = doInfo(&action,pipe,client,db,commandArgv,commandArgc);
     }
     else if (strcmp("addcity",commandArgv[0]) == 0 && action.idAction == LOGIN_OK && commandArgc == 2)
     {
-        action.idAction = SUCCESS_REQ;
-        
-        //ToDo - Rever
-        if (db->totalCidades < MAXCITIES)
-        {
-            addCidade(db,commandArgv[1],0);
-        }
+        commandDone = doAddCity(&action,pipe,db,commandArgv,commandArgc);
+    }
+    else if (strcmp("delcity",commandArgv[0]) == 0 && action.idAction == LOGIN_OK && commandArgc == 2)
+    {
+        commandDone = doDelCity(&action,pipe,db,commandArgv,commandArgc);
     }
     else if (strcmp("addvoo",commandArgv[0]) == 0 && action.idAction == LOGIN_OK && commandArgc == 5)
     {
@@ -308,6 +295,14 @@ int doJob(pDatabase db, pRequest req, char *pipe)
     else if (strcmp("seepast",commandArgv[0]) == 0 && action.idAction == LOGIN_OK)
     {
         commandDone = doSeePast(&action,pipe,client,db,commandArgv,commandArgc);
+    }
+    else if (strcmp("adduser",commandArgv[0]) == 0 && action.idAction == LOGIN_OK && commandArgc == 3)
+    {
+        commandDone = doAddUser(&action,pipe,db,commandArgv,commandArgc);
+    }
+    else if (strcmp("deluser",commandArgv[0]) == 0 && action.idAction == LOGIN_OK && commandArgc == 2)
+    {
+        commandDone = doDelUser(&action,pipe,db,commandArgv,commandArgc);
     }
     else
     {
@@ -346,6 +341,66 @@ void shutdownClients(pDatabase db)
 ////////////
 // Comandos
 ////////////
+
+int doInfo(pAction action, char *pipe, int client, pDatabase db, char *argv[], int argc)
+{
+    pClient auxClient;
+    pUser auxUser;
+    char text[MAXMESSAGE];
+    int totalLines;
+    
+    action->idAction = SUCCESS_REQ;
+    snprintf(action->message,MAXMESSAGE,"\nINFORMAÇÃO DO SISTEMA:\n");
+    
+    //////////////////
+    //Enviar resposta
+    //////////////////
+    action->hasText = 1;
+    write(client,&action->idAction,sizeof(int));
+    write(client,&action->hasText,sizeof(int));
+    write(client,action->message,sizeof(action->message));
+    
+    totalLines = db->totalClients + db->totalUsers + 5; //5 - Linhas de informação
+    //Número de Linhas
+    write(client,&totalLines,sizeof(int));
+    
+    snprintf(text,sizeof(text),"Data actual: %d\n",db->data);
+    write(client,text,sizeof(text));
+    
+    snprintf(text,sizeof(text),"Total de cidades: %d\n",db->totalCidades);
+    write(client,text,sizeof(text));
+
+    snprintf(text,sizeof(text),"Total de voos disponíveis: %d\n",db->totalVoos);
+    write(client,text,sizeof(text));
+
+    snprintf(text,sizeof(text),"Utilizadores: %d\n",db->totalUsers);
+    write(client,text,sizeof(text));
+    
+    //Utilizadores
+    auxUser = db->users;
+    while (auxUser)
+    {
+        snprintf(text,sizeof(text)," %s\n",auxUser->username);
+        write(client,text,sizeof(text));
+        auxUser = auxUser->next;
+    }
+    
+    snprintf(text,sizeof(text),"Clientes activos: %d\n",db->totalClients);
+    write(client,text,sizeof(text));
+    
+    //Clientes activos
+    auxClient = db->clients;
+    while (auxClient)
+    {
+        snprintf(text,sizeof(text)," %d - %s\n",auxClient->pid,getClientUsername(auxClient));
+        write(client,text,sizeof(text));
+        auxClient = auxClient->next;
+    }
+    
+    close(client);
+    //Resposta enviada
+    return 1;
+}
 
 int doAddVoo(pAction action, char *pipe, pDatabase db, char *argv[], int argc)
 {
@@ -550,4 +605,112 @@ int doSeePast(pAction action, char *pipe, int client, pDatabase db, char *argv[]
     
     close(f);
     return 1;
+}
+
+int doAddUser(pAction action, char *pipe, pDatabase db, char *argv[], int argc)
+{
+    //Verificar se está a adicionar o administrador
+    if (strcmp(ADMIN,argv[1]) == 0)
+    {
+        action->idAction = FAILED_REQ;
+        sprintf(action->message,"Não é possível adicionar um administrador");
+    }
+    //Verificar se utilizador já existe
+    else if (findUser(db->users,argv[1]))
+    {
+        action->idAction = FAILED_REQ;
+        sprintf(action->message,"Utilizador \"%s\" já existe",argv[1]);
+    }
+    else if (argv[2] == 0)
+    {
+        action->idAction = FAILED_REQ;
+        sprintf(action->message,"Password não pode ser nula");
+    }
+    else if (strlen(argv[2]) <= MINPASSWORD)
+    {
+        action->idAction = FAILED_REQ;
+        sprintf(action->message,"Password tem que ser superior a %d caracteres",MINPASSWORD);
+    }
+    else if (strlen(argv[1]) > MAXLOGIN)
+    {
+        action->idAction = FAILED_REQ;
+        sprintf(action->message,"Username tem que ser inferior a %d caracteres",MAXLOGIN);
+    }
+    else if (strlen(argv[2]) > MAXLOGIN)
+    {
+        action->idAction = FAILED_REQ;
+        sprintf(action->message,"Password tem que ser inferior a %d caracteres",MAXLOGIN);
+    }
+    else
+    {
+        addUser(db,argv[1],argv[2]);
+        saveUsers(SOAGENTES,db);
+        action->idAction = SUCCESS_REQ;
+    }
+    return 0;
+}
+
+int doDelUser(pAction action, char *pipe, pDatabase db, char *argv[], int argc)
+{
+    //Verificar se está a adicionar o administrador
+    if (strcmp(ADMIN,argv[1]) == 0)
+    {
+        action->idAction = FAILED_REQ;
+        sprintf(action->message,"Não é possível remover um administrador");
+    }
+    //Verificar se utilizador existe
+    else if (!findUser(db->users,argv[1]))
+    {
+        action->idAction = FAILED_REQ;
+        sprintf(action->message,"Utilizador \"%s\" não existe",argv[1]);
+    }
+    else
+    {
+        removeUser(db,argv[1]);
+        saveUsers(SOAGENTES,db);
+        action->idAction = SUCCESS_REQ;
+    }
+    return 0;
+}
+
+int doAddCity(pAction action, char *pipe, pDatabase db, char *argv[], int argc)
+{
+    if (findCidade(db->cidades,argv[1]))
+    {
+        action->idAction = FAILED_REQ;
+        sprintf(action->message,"Cidade \"%s\" já existe",argv[1]);
+    }
+    else if (db->totalCidades > MAXCITIES)
+    {
+        action->idAction = FAILED_REQ;
+        sprintf(action->message,"Foi atingido o limite de cidades (%d)",MAXCITIES);
+    }
+    else
+    {
+        addCidade(db,argv[1],0);
+        action->idAction = SUCCESS_REQ;
+    }
+    return 0;
+}
+
+int doDelCity(pAction action, char *pipe, pDatabase db, char *argv[], int argc)
+{
+    //Verificar se cidade existe
+    if (!findCidade(db->cidades,argv[1]))
+    {
+        action->idAction = FAILED_REQ;
+        sprintf(action->message,"Cidade \"%s\" não existe",argv[1]);
+    }
+    //Verificar se a cidade tem voos associados
+    else if (findVooByCidade(db,argv[1]))
+    {
+        action->idAction = FAILED_REQ;
+        sprintf(action->message,"Cidade \"%s\" tem voos associados",argv[1]);
+    }
+    else
+    {
+        removeCidade(db,argv[1]);
+        action->idAction = SUCCESS_REQ;
+    }
+    return 0;
 }

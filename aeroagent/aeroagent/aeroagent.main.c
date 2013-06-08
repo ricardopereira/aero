@@ -76,6 +76,11 @@ int main(int argc, const char * argv[])
             else
                 printf("Iniciar sessão pelo comando \"login\"\n");
         }
+        else if (strcmp(commandArgv[0],"login") == 0)
+        {
+            printf("Sessão já foi iniciada: %s\n",req->username);
+            printf("Utilize o comando \"logout\" para terminar a sessão actual\n");
+        }
         else if (strcmp(commandArgv[0],"logout") == 0)
         {
             if (doLogout(req))

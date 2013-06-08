@@ -198,15 +198,13 @@ pVoo findVoo(pVoo p, int ID)
 
 pVoo findVooByCidade(pDatabase db, char *nomeCidade)
 {
-    pDatabase auxDataBase;
     pCidade auxCity;
     pVoo auxVoo;
     
-    auxDataBase = db;
-    auxCity = findCidade(auxDataBase->cidades,nomeCidade);
+    auxCity = findCidade(db->cidades,nomeCidade);
     if (auxCity)
     {
-        auxVoo = auxDataBase->voos;
+        auxVoo = db->voos;
         while (auxVoo)
         {
             if (auxVoo->cidadeOrigem == auxCity || auxVoo->cidadeDestino == auxCity)

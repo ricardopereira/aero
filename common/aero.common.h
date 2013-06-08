@@ -7,7 +7,9 @@
 #define MAXPIPE 15
 #define MAXMESSAGE 255
 #define MAXRETRIES 3
+//Outros
 #define LOGIN_WAIT 5
+#define MINPASSWORD 3
 //Actions
 #define SUCCESS_REQ 1
 #define NOEXIST_REQ 2

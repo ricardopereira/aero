@@ -16,11 +16,15 @@ int doJob(char *command, char *argv[], int *argc, pRequest req)
     }
     else if (strcmp("info",argv[0]) == 0)
     {
-        sendRequestWithMessage(ADMIN,req,command,&resposta);
+        sendRequestWithExtendedText(ADMIN,req,command,&resposta);
     }
     else if (strcmp("addcity",argv[0]) == 0)
     {
-        sendRequestWithStatus(ADMIN,req,command,&resposta);
+        sendRequestWithFail(ADMIN,req,command,&resposta);
+    }
+    else if (strcmp("delcity",argv[0]) == 0)
+    {
+        sendRequestWithFail(ADMIN,req,command,&resposta);
     }
     else if (strcmp("mudadata",argv[0]) == 0)
     {
@@ -45,6 +49,14 @@ int doJob(char *command, char *argv[], int *argc, pRequest req)
     else if (strcmp("seepast",argv[0]) == 0)
     {
         sendRequestWithExtendedText(ADMIN,req,command,&resposta);
+    }
+    else if (strcmp("adduser",argv[0]) == 0)
+    {
+        sendRequestWithFail(ADMIN,req,command,&resposta);
+    }
+    else if (strcmp("deluser",argv[0]) == 0)
+    {
+        sendRequestWithFail(ADMIN,req,command,&resposta);
     }
     return 0;
 }

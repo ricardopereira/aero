@@ -50,14 +50,14 @@ pCidade addCidade(pDatabase db, char *nome, int ID)
         while (auxCidade)
         {
             //Verificar duplicação
-            if (strcmp(auxCidade->nome,new->nome) == 0)
+            if (sameString(auxCidade->nome,new->nome) == 0)
             {
                 //Duplicado
                 return auxCidade;
             }
             
             //Verificar se é primeiro elemento da lista
-            if (!auxCidade->prev && strcmp(new->nome,auxCidade->nome) < 0)
+            if (!auxCidade->prev && sameString(new->nome,auxCidade->nome) < 0)
             {
                 //Inserir na primeira posição
                 new->prev = NULL;
@@ -69,7 +69,7 @@ pCidade addCidade(pDatabase db, char *nome, int ID)
             }
             
             //Verificar elementos da lista:
-            if (strcmp(new->nome,auxCidade->nome) < 0)
+            if (sameString(new->nome,auxCidade->nome) < 0)
             {
                 //Inserir no meio da lista
                 new->prev = auxCidade->prev;
@@ -147,53 +147,41 @@ pCidade findCidadeByID(pCidade p, int ID)
 
 void removeCidade(pDatabase db, char *nome)
 {
-    pCidade auxCidade=NULL;
-    pVoo auxVoo=NULL;
+    pCidade auxCidade = NULL;
     
     if (db)
-    {
         auxCidade = findCidade(db->cidades,nome);
-    }
-    
+
     if (auxCidade)
     {
-        auxVoo = findVooByCidade(db,auxCidade->nome);
-        if (!auxVoo)
+        //Se for primeiro elemento
+        if (!auxCidade->prev)
         {
-            //Se for primeiro elemento
-            if (!auxCidade->prev)
+            if (auxCidade->next)
             {
-                if (auxCidade->next)
-                {
-                    db->cidades = auxCidade->next;
-                    auxCidade->next->prev = NULL;
-                }
-                else
-                {
-                    db->cidades = NULL;
-                    db->lastCidade = NULL;
-                }
+                db->cidades = auxCidade->next;
+                auxCidade->next->prev = NULL;
             }
-            //Ultimo elemento
-            else if (auxCidade->prev && !auxCidade->next)
-            {
-                auxCidade->prev->next = NULL;
-            }
-            //Se for elemento interior, sem ser dos extremos
             else
             {
-                auxCidade->prev->next = auxCidade->next;
-                auxCidade->next->prev = auxCidade->prev;
+                db->cidades = NULL;
+                db->lastCidade = NULL;
             }
-            auxCidade->next = NULL;
-            auxCidade->prev = NULL;
-            db->totalCidades--;
-            freeCidades(auxCidade);
         }
+        //Ultimo elemento
+        else if (auxCidade->prev && !auxCidade->next)
+        {
+            auxCidade->prev->next = NULL;
+        }
+        //Se for elemento interior, sem ser dos extremos
         else
         {
-            printf("A cidade %s que deseja remover tem voos associados", auxCidade->nome);
+            auxCidade->prev->next = auxCidade->next;
+            auxCidade->next->prev = auxCidade->prev;
         }
+        auxCidade->next = NULL;
+        auxCidade->prev = NULL;
+        db->totalCidades--;
+        freeCidades(auxCidade);
     }
-    
 }

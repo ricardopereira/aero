@@ -10,7 +10,7 @@
 
 pRequest req;
 
-#define TOTALCOMMANDS 13
+#define TOTALCOMMANDS 16
 
 void stopClient(int sinal)
 {
@@ -29,15 +29,14 @@ int main(int argc, const char * argv[])
     int idx, loggedIn = 0, retry = MAXRETRIES;
     
     //Ao alterar a lista de comandos, é necessário alterar a constante TOTALCOMMANDS
-    char *listCommands[] = {"exit","help","login","logout","shutdown","info","addcity","mudadata","addvoo","lista",
-                            "getdata","cancel","seepast"};
+    char *listCommands[] = {"exit","help","login","logout","shutdown","info","addcity","delcity","mudadata","addvoo","lista",
+                            "getdata","cancel","seepast","adduser","deluser"};
     
     //Argumentos de cada comando
-    char *listCommandsArgs[] = {"","","[password]","","","","[nome]","[dia]","[idVoo] [origem] [destino] [dia]","","",
-                                "[idVoo]",""};
+    char *listCommandsArgs[] = {"","","[password]","","","","[nome]","[nome]","[dia]","[idVoo] [origem] [destino] [dia]","","","[idVoo]","","[username] [password]","[username]"};
     
     //Número total de argumentos por comando
-    int listCommandsArgc[] = {0,0,1,0,0,0,1,1,4,0,0,1,0};
+    int listCommandsArgc[] = {0,0,1,0,0,0,1,1,1,4,0,0,1,0,2,1};
     
     //Request
     req = NULL;
@@ -120,6 +119,11 @@ int main(int argc, const char * argv[])
             }
             else
                 printf("Iniciar sessão pelo comando \"login\"\n");
+        }
+        else if (strcmp(commandArgv[0],"login") == 0)
+        {
+            printf("Sessão já foi iniciada\n");
+            printf("Utilize o comando \"logout\" para terminar a sessão actual\n");
         }
         else if (strcmp(commandArgv[0],"logout") == 0)
         {
