@@ -6,6 +6,8 @@
 #define MAXCOMMANDARGS 5
 #define MAXPIPE 15
 #define MAXMESSAGE 255
+#define MAXRETRIES 3
+#define LOGIN_WAIT 5
 //Actions
 #define SUCCESS_REQ 1
 #define NOEXIST_REQ 2

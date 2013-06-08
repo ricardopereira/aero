@@ -26,7 +26,7 @@ int main(int argc, const char * argv[])
     char command[MAXCOMMAND];
     char *commandArgv[MAXCOMMANDARGS];
     int commandArgc = 0;
-    int idx, loggedIn = 0;
+    int idx, loggedIn = 0, retry = MAXRETRIES;
     
     //Ao alterar a lista de comandos, é necessário alterar a constante TOTALCOMMANDS
     char *listCommands[] = {"exit","help","login","logout","shutdown","info","addcity","mudadata","addvoo","lista",
@@ -66,7 +66,9 @@ int main(int argc, const char * argv[])
         
         //Executar comando
         if (strcmp(commandArgv[0],"exit") == 0)
+        {
             break;
+        }
         else if (strcmp(commandArgv[0],"show") == 0)
         {
             //Mostrar leitura de argumentos para verificação
@@ -100,8 +102,20 @@ int main(int argc, const char * argv[])
                 else
                 {
                     //Efectuar login do Administrador
-                    req = doLogin(ADMIN,commandArgv[1]);
+                    req = doLoginWithRetry(ADMIN,commandArgv[1],&retry);
                     loggedIn = req != NULL;
+                    if (loggedIn)
+                    {
+                        retry = MAXRETRIES;
+                    }
+                    else if (retry == 0)
+                    {
+                        //Após tentativas falhadas
+                        printf("Programa vai terminar após %d segundos\n",LOGIN_WAIT);
+                        fflush(stdout);
+                        sleep(LOGIN_WAIT);
+                        break;
+                    }
                 }
             }
             else

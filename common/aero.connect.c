@@ -72,7 +72,7 @@ void sendRequestToServer(pRequest p)
     close(server);
 }
 
-pRequest doLogin(char *username, char *password)
+pRequest doLoginWithRetry(char *username, char *password, int *retryCount)
 {
     pRequest req;
     int client, isAdmin;
@@ -117,9 +117,23 @@ pRequest doLogin(char *username, char *password)
         free(req);
         req = NULL;
         printf("Login inválido: %s\n",resposta.message);
+        //No caso do Administrador
+        if (isAdmin)
+        {
+            if (--(*retryCount) == 0)
+                return NULL;
+            printf("Tente novamente após %d segundos\n",LOGIN_WAIT);
+            sleep(LOGIN_WAIT);
+        }
     }
     close(client);
     return req;
+}
+
+pRequest doLogin(char *username, char *password)
+{
+    int dumb = 0;
+    return doLoginWithRetry(username,password,&dumb);
 }
 
 void sendRequest(char *pipeClient, pRequest req, char *command, pAction resp)
