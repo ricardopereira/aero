@@ -8,7 +8,7 @@
 
 int checkServer()
 {
-    //Verificar servidor
+    /*Verificar servidor*/
     if (access(SERVER,W_OK) == -1)
     {
         printf("Servidor não está em execução\n");
@@ -78,22 +78,22 @@ pRequest doLoginWithRetry(char *username, char *password, int *retryCount)
     int client, isAdmin;
     Action resposta;
     char pipeName[MAXPIPE];
-    //Verificar ligação ao servidor
+    /*Verificar ligação ao servidor*/
     if (checkServer() == 0)
       return NULL;
     
-    //Criar pipe actual
+    /*Criar pipe actual*/
     req = createClientPipe(getpid(),strcmp(username,ADMIN) == 0);
     
-    //Dados para o pedido
+    /*Dados para o pedido*/
     strcpy(req->command,"login");
     strcpy(req->username,username);
     strcpy(req->password,password);
 
-    //Enviar pedido ao servidor
+    /*Enviar pedido ao servidor*/
     sendRequestToServer(req);
     
-    //Obter resposta do servidor
+    /*Obter resposta do servidor*/
     resposta.idAction = 0;
     isAdmin = strcmp(username,ADMIN) == 0;
     if (isAdmin)
@@ -102,11 +102,11 @@ pRequest doLoginWithRetry(char *username, char *password, int *retryCount)
         sprintf(pipeName,"%d",req->pid);
     
     client = open(pipeName,O_RDONLY);
-    //Ler resposta
+    /*Ler resposta*/
     read(client,&resposta.idAction,sizeof(int));
     read(client,&resposta.hasText,sizeof(int));
     read(client,resposta.message,sizeof(resposta.message));
-    //Tratamento da resposta
+    /*Tratamento da resposta*/
     if (resposta.idAction == LOGIN_OK)
     {
         printf("Sessão iniciada: %s\n",resposta.message);
@@ -117,7 +117,7 @@ pRequest doLoginWithRetry(char *username, char *password, int *retryCount)
         free(req);
         req = NULL;
         printf("Login inválido: %s\n",resposta.message);
-        //No caso do Administrador
+        /*No caso do Administrador*/
         if (isAdmin)
         {
             if (--(*retryCount) == 0)
@@ -139,23 +139,23 @@ pRequest doLogin(char *username, char *password)
 void sendRequest(char *pipeClient, pRequest req, char *command, pAction resp)
 {
     int client, i;
-    //Dados para o pedido
+    /*Dados para o pedido*/
     strcpy(req->command,command);
-    //Enviar pedido ao servidor
+    /*Enviar pedido ao servidor*/
     sendRequestToServer(req);
-    //Obter resposta do servidor
+    /*Obter resposta do servidor*/
     resp->idAction = 0;
-    //Abrir pipe Cliente
+    /*Abrir pipe Cliente*/
     client = open(pipeClient,O_RDONLY);
-    //Ler resposta
+    /*Ler resposta*/
     read(client,&resp->idAction,sizeof(int));
     read(client,&resp->hasText,sizeof(int));
     read(client,resp->message,sizeof(resp->message));
     
-    //Tem conteúdo extenso para devolver
+    /*Tem conteúdo extenso para devolver*/
     if (resp->hasText)
     {
-        //Número de Linhas
+        /*Número de Linhas*/
         read(client,&resp->totalLines,sizeof(int));
         
         resp->textLines = malloc(sizeof(char*) * resp->totalLines);
@@ -165,10 +165,10 @@ void sendRequest(char *pipeClient, pRequest req, char *command, pAction resp)
             read(client,resp->textLines[i],sizeof(char) * MAXMESSAGE);
         }
     }
-    //Fechar pipe Cliente
+    /*Fechar pipe Cliente*/
     close(client);
     
-    //Login com sucesso?
+    /*Login com sucesso?*/
     if (resp->idAction == LOGIN_FAILED)
         printf("%s\n",resp->message);
 }
@@ -176,7 +176,7 @@ void sendRequest(char *pipeClient, pRequest req, char *command, pAction resp)
 void sendRequestWithStatus(char *pipeClient, pRequest req, char *command, pAction resp)
 {
     sendRequest(pipeClient,req,command,resp);
-    //Resposta
+    /*Resposta*/
     if (resp->idAction == SUCCESS_REQ)
         printf("%s\n",MSG_COMMANDSUCCESS);
 }
@@ -184,7 +184,7 @@ void sendRequestWithStatus(char *pipeClient, pRequest req, char *command, pActio
 void sendRequestWithMessage(char *pipeClient, pRequest req, char *command, pAction resp)
 {
     sendRequest(pipeClient,req,command,resp);
-    //Resposta
+    /*Resposta*/
     if (resp->idAction == SUCCESS_REQ)
         printf("%s\n",resp->message);
 }
@@ -192,7 +192,7 @@ void sendRequestWithMessage(char *pipeClient, pRequest req, char *command, pActi
 void sendRequestWithFail(char *pipeClient, pRequest req, char *command, pAction resp)
 {
     sendRequest(pipeClient,req,command,resp);
-    //Resposta
+    /*Resposta*/
     switch (resp->idAction) {
         case SUCCESS_REQ:
             printf("%s\n",MSG_COMMANDSUCCESS);
@@ -210,11 +210,11 @@ void sendRequestWithExtendedText(char *pipeClient, pRequest req, char *command, 
 {
     int i;
     sendRequest(pipeClient,req,command,resp);
-    //Resposta
+    /*Resposta*/
     if (resp->idAction == SUCCESS_REQ)
     {
         printf("%s",resp->message);
-        //Verificar resposta extendida
+        /*Verificar resposta extendida*/
         if (resp->hasText)
         {
             for (i = 0; i < resp->totalLines; i++)

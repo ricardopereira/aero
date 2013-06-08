@@ -27,7 +27,7 @@ pCidade createCidade(pCidade p)
     }
     if (p)
     {
-        //Próximo elemento
+        /*Próximo elemento*/
         p->next = new;
     }
     new->next = NULL;
@@ -40,7 +40,7 @@ pCidade addCidade(pDatabase db, char *nome, int ID)
     pCidade new, auxCidade;
     int endOfList = 1;
     
-    //Novo elemento
+    /*Novo elemento*/
     new = createCidade(NULL);
     new->nome = nome;
     
@@ -49,17 +49,17 @@ pCidade addCidade(pDatabase db, char *nome, int ID)
         auxCidade = db->cidades;
         while (auxCidade)
         {
-            //Verificar duplicação
+            /*Verificar duplicação*/
             if (sameString(auxCidade->nome,new->nome) == 0)
             {
-                //Duplicado
+                /*Duplicado*/
                 return auxCidade;
             }
             
-            //Verificar se é primeiro elemento da lista
+            /*Verificar se é primeiro elemento da lista*/
             if (!auxCidade->prev && sameString(new->nome,auxCidade->nome) < 0)
             {
-                //Inserir na primeira posição
+                /*Inserir na primeira posição*/
                 new->prev = NULL;
                 new->next = auxCidade;
                 auxCidade->prev = new;
@@ -68,10 +68,10 @@ pCidade addCidade(pDatabase db, char *nome, int ID)
                 break;
             }
             
-            //Verificar elementos da lista:
+            /*Verificar elementos da lista:*/
             if (sameString(new->nome,auxCidade->nome) < 0)
             {
-                //Inserir no meio da lista
+                /*Inserir no meio da lista*/
                 new->prev = auxCidade->prev;
                 auxCidade->prev->next = new;
                 auxCidade->prev = new;
@@ -85,10 +85,10 @@ pCidade addCidade(pDatabase db, char *nome, int ID)
         
         if (endOfList)
         {
-            //Inicio da lista
+            /*Inicio da lista*/
             if (!db->cidades)
                 db->cidades = new;
-            //Guardar a última cidade adicionada
+            /*Guardar a última cidade adicionada*/
             if (db->lastCidade)
             {
                 db->lastCidade->next = new;
@@ -99,7 +99,7 @@ pCidade addCidade(pDatabase db, char *nome, int ID)
         
         if (ID == 0)
         {
-            //Sequencial
+            /*Sequencial*/
             new->ID = ++db->lastIDCidade;
         }
         else
@@ -115,7 +115,7 @@ pCidade addCidade(pDatabase db, char *nome, int ID)
 
 pCidade newCidade(pDatabase db, char *nome)
 {
-    //Nova cidade com geração automática do ID
+    /*Nova cidade com geração automática do ID*/
     return addCidade(db,nome,0);
 }
 
@@ -154,7 +154,7 @@ void removeCidade(pDatabase db, char *nome)
 
     if (auxCidade)
     {
-        //Se for primeiro elemento
+        /*Se for primeiro elemento*/
         if (!auxCidade->prev)
         {
             if (auxCidade->next)
@@ -168,12 +168,12 @@ void removeCidade(pDatabase db, char *nome)
                 db->lastCidade = NULL;
             }
         }
-        //Ultimo elemento
+        /*Ultimo elemento*/
         else if (auxCidade->prev && !auxCidade->next)
         {
             auxCidade->prev->next = NULL;
         }
-        //Se for elemento interior, sem ser dos extremos
+        /*Se for elemento interior, sem ser dos extremos*/
         else
         {
             auxCidade->prev->next = auxCidade->next;

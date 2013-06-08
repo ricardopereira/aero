@@ -1,0 +1,67 @@
+#!/bin/sh
+
+DirServer="aeroserver"
+DirAdmin="aeroadmin"
+DirAgent="aeroagent"
+DirCommon="common"
+DirRelease="release"
+
+echo $(date)
+
+if [ -d "$DirRelease" ]; then
+  echo "$DirRelease já existe"
+  exit
+fi
+
+if [ ! -d "$DirCommon" ]; then
+  echo "$DirCommon não existe"
+  exit
+fi
+
+echo "SERVER-----------------"
+if [ -d "$DirServer" ]; then
+  echo "$DirServer"
+  `mkdir -p "$DirRelease/$DirServer/"`
+  `cp -rp $DirServer/$DirServer/*.c $DirRelease/$DirServer`
+  `cp -rp $DirServer/$DirServer/*.h $DirRelease/$DirServer`
+  #COMMON - Dependências
+  `cp -rp $DirCommon/aero.common.h $DirRelease/$DirServer`
+  `cp -rp $DirCommon/aero.shell.h $DirRelease/$DirServer`
+  `cp -rp $DirCommon/aero.shell.c $DirRelease/$DirServer`
+  #Compile
+  gcc -o $DirRelease/server -std=c89 -pedantic $DirRelease/$DirServer/*.c
+fi
+
+echo "ADMIN-----------------"
+if [ -d "$DirAdmin" ]; then
+  echo "$DirAdmin"
+  `mkdir -p "$DirRelease/$DirAdmin/"`
+  `cp -rp $DirAdmin/$DirAdmin/*.c $DirRelease/$DirAdmin`
+  `cp -rp $DirAdmin/$DirAdmin/*.h $DirRelease/$DirAdmin`
+  #COMMON - Dependências
+  `cp -rp $DirCommon/aero.common.h $DirRelease/$DirAdmin`
+  `cp -rp $DirCommon/aero.shell.h $DirRelease/$DirAdmin`
+  `cp -rp $DirCommon/aero.shell.c $DirRelease/$DirAdmin`
+  `cp -rp $DirCommon/aero.connect.h $DirRelease/$DirAdmin`
+  `cp -rp $DirCommon/aero.connect.c $DirRelease/$DirAdmin`
+  #Compile
+  gcc -o $DirRelease/admin -std=c89 -pedantic $DirRelease/$DirAdmin/*.c
+fi
+
+echo "AGENT-----------------"
+if [ -d "$DirAgent" ]; then
+  echo "$DirAgent"
+  `mkdir -p "$DirRelease/$DirAgent/"`
+  `cp -rp $DirAgent/$DirAgent/*.c $DirRelease/$DirAgent`
+  `cp -rp $DirAgent/$DirAgent/*.h $DirRelease/$DirAgent`
+  #COMMON - Dependências
+  `cp -rp $DirCommon/aero.common.h $DirRelease/$DirAgent`
+  `cp -rp $DirCommon/aero.shell.h $DirRelease/$DirAgent`
+  `cp -rp $DirCommon/aero.shell.c $DirRelease/$DirAgent`
+  `cp -rp $DirCommon/aero.connect.h $DirRelease/$DirAgent`
+  `cp -rp $DirCommon/aero.connect.c $DirRelease/$DirAgent`
+  #Compile
+  gcc -o $DirRelease/agent -std=c89 -pedantic $DirRelease/$DirAgent/*.c
+fi
+
+echo "FIM--------------------"

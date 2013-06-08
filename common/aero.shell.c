@@ -13,7 +13,7 @@ void getCommandArgs(char *command, char *argv[], int *argc)
 {
     char *tempArgv, *tempCommand;
     tempCommand = strdup(command);
-    //Repartir os vários espaços
+    /*Repartir os vários espaços*/
     tempArgv = strtok(tempCommand," ");
     while (tempArgv)
     {
@@ -24,7 +24,7 @@ void getCommandArgs(char *command, char *argv[], int *argc)
 
 void initCommand(char *command, char *argv[], int *argc)
 {
-    //Inicializar a vazio
+    /*Inicializar a vazio*/
     strcpy(command,"");
     while (*argc != 0)
         argv[(*argc)--] = NULL;
@@ -34,24 +34,24 @@ int readCommand(char *command, char *argv[], int *argc)
 {
     char userInput;
     int idx;
-    //Inicializar
+    /*Inicializar*/
     initCommand(command,argv,argc);
-    //Obter comando do utilizador
+    /*Obter comando do utilizador*/
     userInput = getchar();
     if (userInput != '\n')
     {
         idx = 0;
-        //Ler caracter a caracter os dados introduzidos pelo utilizador,
-        //limitando pelo máximo permitido
+        /*Ler caracter a caracter os dados introduzidos pelo utilizador,*/
+        /*limitando pelo máximo permitido*/
         while ((userInput != '\n') && (idx < MAXCOMMAND))
         {
             command[idx++] = userInput;
-            //Próximo caracter
+            /*Próximo caracter*/
             userInput = getchar();
         }
-        //Indicação do terminador da string
+        /*Indicação do terminador da string*/
         command[idx] = 0;
-        //Interpretar argumentos do comando
+        /*Interpretar argumentos do comando*/
         getCommandArgs(command,argv,argc);
         return 0;
     }
@@ -67,17 +67,17 @@ int checkCommand(char *validCommands[], char *validArgs[], int *validArgc, int m
 
     while (bf && i<maxValidCommands)
     {
-        //Verificar se comando existe
+        /*Verificar se comando existe*/
         if (strcmp(bf,command) == 0)
         {
-            //Verificar argumentos
+            /*Verificar argumentos*/
             if (validArgc[i] != argc-1)
             {
                 if (strcmp(validArgs[i],"") != 0)
-                    //Argumento inválido
+                    /*Argumento inválido*/
                     printf("Argumentos possíveis para \"%s\": %s\n",command,validArgs[i]);
                 else
-                    //Sem argumentos
+                    /*Sem argumentos*/
                     printf("Não é necessário argumentos para \"%s\"\n",command);
                 return 0;
             }

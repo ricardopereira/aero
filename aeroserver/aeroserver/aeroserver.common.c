@@ -10,7 +10,6 @@ void showCidades(pCidade p)
     while (auxCidade)
     {
         printf("%d - %s",auxCidade->ID,auxCidade->nome);
-        //write(1,auxCidade->nome,strlen(auxCidade->nome));
         printf("\n");
         auxCidade = auxCidade->next;
     }
@@ -29,7 +28,7 @@ void showVoosDisponiveis(pVoo p, int showPassaportes)
                auxVoo->ocupacao,
                auxVoo->capacidade);
         printf("\n");
-        //Passaportes
+        /*Passaportes*/
         if (showPassaportes && auxVoo->ocupacao > 0)
             for (i=0; i<auxVoo->ocupacao; i++)
                 printf("P%d: %d\n",i+1,auxVoo->passaportes[i]);
@@ -68,10 +67,10 @@ void upperCase(char *Str, char *newStr)
     int i;
     for (i=0; i<=strlen(Str); i++)
     {
-        if( (Str[i] > 96 ) && (Str[i] < 123)) //Verifica se é minuscula
-            newStr[i] = Str[i] - 'a' + 'A'; //Transformação
+        if( (Str[i] > 96 ) && (Str[i] < 123)) /*Verifica se é minuscula*/
+            newStr[i] = Str[i] - 'a' + 'A'; /*Transformação*/
         else
-            newStr[i] = Str[i]; //Igual
+            newStr[i] = Str[i]; /*Igual*/
     }
 }
 

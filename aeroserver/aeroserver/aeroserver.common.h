@@ -2,13 +2,13 @@
 #define MAXCITIES 30
 #define MAXDATASTR 8
 #define DEFAULTDATA 1
-//Variável de Ambiente
-#define ENVFICHEIRO "SOFICHEIRO" //Localização do ficheiro de base de dados
-//Ficheiros
-#define SOADMPASS "SOADMPASS" //Password do administrador
-#define SOAGENTES "SOAGENTES" //Utilizadores
-#define SODATA "SODATA" //Data do sistema
-#define SOHISTORICO "SOHISTORICO" //Voos ultrapassados
+/*Variável de Ambiente*/
+#define ENVFICHEIRO "SOFICHEIRO" /*Localização do ficheiro de base de dados*/
+/*Ficheiros*/
+#define SOADMPASS "SOADMPASS" /*Password do administrador*/
+#define SOAGENTES "SOAGENTES" /*Utilizadores*/
+#define SODATA "SODATA" /*Data do sistema*/
+#define SOHISTORICO "SOHISTORICO" /*Voos ultrapassados*/
 
 typedef struct recDatabase Database, *pDatabase;
 typedef struct recCidade Cidade, *pCidade;
@@ -20,21 +20,21 @@ typedef struct recUser User, *pUser;
 struct recDatabase {
     int inBackground;
     int data;
-    //Cidades
+    /*Cidades*/
     pCidade cidades;
     pCidade lastCidade;
     int totalCidades;
     int lastIDCidade;
-    //Voos
+    /*Voos*/
     pVoo voos;
     pVoo lastVoo;
     int totalVoos;
     pVoo voosHistorico;
-    //Terminais e Admin connectados
+    /*Terminais e Admin connectados*/
     pClient clients;
     pClient lastClient;
     int totalClients;
-    //Utilizadores + Administrador
+    /*Utilizadores + Administrador*/
     pUser users;
     pUser lastUser;
     int totalUsers;
@@ -79,6 +79,6 @@ void showVoosDisponiveis(pVoo p, int showPassaportes);
 void showUtilizadores(pUser p, int showPassword);
 void showClientesLigados(pClient p);
 
-//Tools
+/*Tools*/
 void upperCase(char *Str, char *newStr);
 int sameString(const char *a,const char *b);

@@ -27,7 +27,7 @@ pClient createClient(pClient p)
     }
     if (p)
     {
-        //Próximo elemento
+        /*Próximo elemento*/
         p->next = new;
     }
     new->prev = NULL;
@@ -41,7 +41,7 @@ pClient addClient(pDatabase db, int pid)
     pClient new, auxClient;
     int endOfList = 1;
     
-    //Novo elemento
+    /*Novo elemento*/
     new = createClient(NULL);
     new->pid = pid;
     
@@ -50,17 +50,17 @@ pClient addClient(pDatabase db, int pid)
         auxClient = db->clients;
         while (auxClient)
         {
-            //Verificar duplicação
+            /*Verificar duplicação*/
             if (auxClient->pid == new->pid)
             {
-                //Duplicado
+                /*Duplicado*/
                 return auxClient;
             }
             
-            //Verificar se é primeiro elemento da lista
+            /*Verificar se é primeiro elemento da lista*/
             if (!auxClient->prev && (new->pid < auxClient->pid))
             {
-                //Inserir na primeira posição
+                /*Inserir na primeira posição*/
                 new->prev = NULL;
                 new->next = auxClient;
                 auxClient->prev = new;
@@ -69,10 +69,10 @@ pClient addClient(pDatabase db, int pid)
                 break;
             }
             
-            //Verificar elementos da lista:
+            /*Verificar elementos da lista:*/
             if (new->pid < auxClient->pid)
             {
-                //Inserir no meio da lista
+                /*Inserir no meio da lista*/
                 new->prev = auxClient->prev;
                 auxClient->prev->next = new;
                 auxClient->prev = new;
@@ -86,10 +86,10 @@ pClient addClient(pDatabase db, int pid)
         
         if (endOfList)
         {
-            //Inicio da lista
+            /*Inicio da lista*/
             if (!db->clients)
                 db->clients = new;
-            //Guardar a última cidade adicionada
+            /*Guardar a última cidade adicionada*/
             if (db->lastClient)
             {
                 db->lastClient->next = new;
@@ -126,7 +126,7 @@ void removeClient(pDatabase db, int pid)
     pClient auxClient = findClient(db->clients,pid);
     if (auxClient)
     {
-        //Se for primeiro elemento
+        /*Se for primeiro elemento*/
         if (!auxClient->prev)
         {
             if (auxClient->next)
@@ -140,13 +140,13 @@ void removeClient(pDatabase db, int pid)
                 db->lastClient = NULL;
             }
         }
-        //Ultimo elemento
+        /*Ultimo elemento*/
         else if (auxClient->prev && !auxClient->next)
         {
             db->lastClient = auxClient->prev;
             auxClient->prev->next = NULL;
         }
-        //Se for elemento interior, sem ser dos extremos
+        /*Se for elemento interior, sem ser dos extremos*/
         else
         {
             auxClient->prev->next = auxClient->next;

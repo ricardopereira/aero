@@ -27,7 +27,7 @@ pUser createUser(pUser p)
     }
     if (p)
     {
-        //Próximo elemento
+        /*Próximo elemento*/
         p->next = new;
     }
     new->prev = NULL;
@@ -40,7 +40,7 @@ pUser addUser(pDatabase db, char *username, char *password)
     pUser new, auxUser;
     int endOfList = 1;
     
-    //Novo elemento
+    /*Novo elemento*/
     new = createUser(NULL);
     strcpy(new->username,username);
     strcpy(new->password,password);
@@ -50,17 +50,17 @@ pUser addUser(pDatabase db, char *username, char *password)
         auxUser = db->users;
         while (auxUser)
         {
-            //Verificar duplicação
+            /*Verificar duplicação*/
             if (strcmp(auxUser->username,new->username) == 0)
             {
-                //Duplicado
+                /*Duplicado*/
                 return auxUser;
             }
             
-            //Verificar se é primeiro elemento da lista
+            /*Verificar se é primeiro elemento da lista*/
             if (!auxUser->prev && sameString(new->username,auxUser->username) < 0)
             {
-                //Inserir na primeira posição
+                /*Inserir na primeira posição*/
                 new->prev = NULL;
                 new->next = auxUser;
                 auxUser->prev = new;
@@ -69,10 +69,10 @@ pUser addUser(pDatabase db, char *username, char *password)
                 break;
             }
             
-            //Verificar elementos da lista:
+            /*Verificar elementos da lista:*/
             if (sameString(new->username,auxUser->username) < 0)
             {
-                //Inserir no meio da lista
+                /*Inserir no meio da lista*/
                 new->prev = auxUser->prev;
                 auxUser->prev->next = new;
                 auxUser->prev = new;
@@ -86,10 +86,10 @@ pUser addUser(pDatabase db, char *username, char *password)
         
         if (endOfList)
         {
-            //Inicio da lista
+            /*Inicio da lista*/
             if (!db->users)
                 db->users = new;
-            //Guardar a última cidade adicionada
+            /*Guardar a última cidade adicionada*/
             if (db->lastUser)
             {
                 db->lastUser->next = new;
@@ -120,7 +120,7 @@ void removeUser(pDatabase db, char *username)
     pUser auxUser = findUser(db->users,username);
     if (auxUser)
     {
-        //Se for primeiro elemento
+        /*Se for primeiro elemento*/
         if (!auxUser->prev)
         {
             if (auxUser->next)
@@ -134,13 +134,13 @@ void removeUser(pDatabase db, char *username)
                 db->lastUser = NULL;
             }
         }
-        //Ultimo elemento
+        /*Ultimo elemento*/
         else if (auxUser->prev && !auxUser->next)
         {
             db->lastUser = auxUser->prev;
             auxUser->prev->next = NULL;
         }
-        //Se for elemento interior, sem ser dos extremos
+        /*Se for elemento interior, sem ser dos extremos*/
         else
         {
             auxUser->prev->next = auxUser->next;

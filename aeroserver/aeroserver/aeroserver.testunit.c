@@ -8,7 +8,7 @@
 pDatabase testSave()
 {
     pDatabase db = malloc(sizeof(Database));
-    //Init
+
     db->totalCidades = 0;
     db->totalVoos = 0;
     db->cidades = NULL;

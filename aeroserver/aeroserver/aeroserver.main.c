@@ -17,13 +17,13 @@ int main(int argc, const char * argv[], char * envp[])
     
     if (argc == 2)
     {
-        //Mostrar Variáveis de Ambiente
+        /*Mostrar Variáveis de Ambiente*/
         if (strcmp(argv[1],"env") == 0)
         {
             for (i=0; envp[i]!=(char *)0; i++)
                 printf("envp[%d] = <%s>\n", i, envp[i]);
         }
-        //Modo "Foreground"
+        /*Modo "Foreground"*/
         else if (strcmp(argv[1],"fg") == 0)
         {
             printf("Servidor em foreground\n");
@@ -32,12 +32,12 @@ int main(int argc, const char * argv[], char * envp[])
             return 0;
         }
     }
-    //Colocar em Background
+    /*Colocar em Background*/
     pid = fork();
     if (pid < 0)
-        return 1; //Erro
+        return 1; /*Erro*/
     else if (pid != 0)
-        exit(0); //Parent
+        exit(0); /*Parent*/
     else
         startServer(1);
     return 0;

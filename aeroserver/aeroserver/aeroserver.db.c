@@ -17,7 +17,7 @@
 void freeDB(pDatabase p)
 {
     freeVoos(p->voos);
-    //Em últmo por causa das dependências nos voos
+    /*Em últmo por causa das dependências nos voos*/
     freeCidades(p->cidades);
     freeClients(p->clients);
     freeUsers(p->users);
@@ -33,7 +33,7 @@ pDatabase readFile(FILE *f)
     pCidade cidadeOrigem, cidadeDestino;
     
     pDatabase db = malloc(sizeof(Database));
-    //Init
+    /*Init*/
     db->totalCidades = 0;
     db->totalVoos = 0;
     db->cidades = NULL;
@@ -48,52 +48,50 @@ pDatabase readFile(FILE *f)
     db->lastUser = NULL;
     db->data = 0;
     
-    //Total de Cidades
+    /*Total de Cidades*/
     fread(&totalCidades,sizeof(int),1,f);
-    //printf("%d\n",totalCidades);
-    //Total de Voos
+    /*Total de Voos*/
     fread(&totalVoos,sizeof(int),1,f);
-    //printf("%d\n",totalVoos);
     
-    //Percorrer o número de Cidades
+    /*Percorrer o número de Cidades*/
     while (totalCidades--)
     {
-        //Identificador
+        /*Identificador*/
         fread(&aux,sizeof(int),1,f);
-        //Ler o tamanho do nome da Cidade
+        /*Ler o tamanho do nome da Cidade*/
         fread(&sizeOf,sizeof(unsigned short),1,f);
-        //Allocar memória necessária para o nome
+        /*Allocar memória necessária para o nome*/
         str = malloc(sizeOf);
-        //Ler o valor para a memória
+        /*Ler o valor para a memória*/
         fread(str,sizeof(char),sizeOf,f);
-        //Criar nova cidade na estrutura
+        /*Criar nova cidade na estrutura*/
         addCidade(db,str,aux);
-        //ToDo: free(str);
+        /*ToDo: free(str);*/
     }
-    //Percorrer o número de Cidades
+    /*Percorrer o número de Cidades*/
     while (totalVoos--)
     {
-        //Identificador
+        /*Identificador*/
         fread(&ID,sizeof(int),1,f);
-        //Buffer: dia
+        /*Buffer: dia*/
         fread(&aux,sizeof(int),1,f);
-        //Buffer: cidadeOrigem
+        /*Buffer: cidadeOrigem*/
         fread(&idx,sizeof(int),1,f);
         cidadeOrigem = findCidadeByID(db->cidades,idx);
-        //Buffer: cidadeDestino
+        /*Buffer: cidadeDestino*/
         fread(&idx,sizeof(int),1,f);
         cidadeDestino = findCidadeByID(db->cidades,idx);
         
-        //Adicionar voo
+        /*Adicionar voo*/
         auxVoo = addVooByID(db,ID,cidadeOrigem,cidadeDestino,aux);
         
-        //Buffer: capacidade
+        /*Buffer: capacidade*/
         fread(&aux,sizeof(int),1,f);
         auxVoo->capacidade = aux;
-        //Buffer: ocupacao
+        /*Buffer: ocupacao*/
         fread(&aux,sizeof(int),1,f);
         auxVoo->ocupacao = aux;
-        //Passaportes
+        /*Passaportes*/
         initPassaportes(auxVoo);
         idx = 0;
         while (aux--)
@@ -112,42 +110,42 @@ void writeFile(FILE *f, pDatabase db)
     pVoo auxVoo;
     unsigned short sizeOf;
     int i;
-    //Gravar o número total de Cidades
+    /*Gravar o número total de Cidades*/
     fwrite(&db->totalCidades,sizeof(int),1,f);
-    //Gravar o número total de Voos
+    /*Gravar o número total de Voos*/
     fwrite(&db->totalVoos,sizeof(int),1,f);
-    //Gravar Cidades
+    /*Gravar Cidades*/
     auxCidade = db->cidades;
     while (auxCidade)
     {
-        //Identificador
+        /*Identificador*/
         fwrite(&auxCidade->ID,sizeof(int),1,f);
-        //Gravar a string mais o /0
+        /*Gravar a string mais o /0*/
         sizeOf = strlen(auxCidade->nome) + 1;
-        //Gravar o sem tamanho
+        /*Gravar o sem tamanho*/
         fwrite(&sizeOf,sizeof(unsigned short),1,f);
-        //Gravar o conteúdo da string
+        /*Gravar o conteúdo da string*/
         fwrite(auxCidade->nome,sizeof(char),sizeOf,f);
-        //Próximo
+        /*Próximo*/
         auxCidade = auxCidade->next;
     }
-    //Gravar Voos
+    /*Gravar Voos*/
     auxVoo = db->voos;
     while (auxVoo)
     {
-        //Identificador
+        /*Identificador*/
         fwrite(&auxVoo->ID,sizeof(int),1,f);
-        //Buffer
+        /*Buffer*/
         fwrite(&auxVoo->dia,sizeof(int),1,f);
         fwrite(&auxVoo->cidadeOrigem->ID,sizeof(int),1,f);
         fwrite(&auxVoo->cidadeDestino->ID,sizeof(int),1,f);
         fwrite(&auxVoo->capacidade,sizeof(int),1,f);
         fwrite(&auxVoo->ocupacao,sizeof(int),1,f);
-        //Passaportes
-        //auxVoo->passaportes;
+        /*Passaportes*/
+        /*auxVoo->passaportes;*/
         for (i=0; i<auxVoo->ocupacao; i++)
             fwrite(&auxVoo->passaportes[i],sizeof(int),1,f);
-        //Próximo
+        /*Próximo*/
         auxVoo = auxVoo->next;
     }
 }
@@ -163,7 +161,7 @@ pDatabase loadDB(const char *path)
         printf("(loadDB)Erro: não foi possível abrir %s\n",path);
         return NULL;
     }
-    //Carregar a estrutura do ficheiro
+    /*Carregar a estrutura do ficheiro*/
     startDB = readFile(f);
     
     fclose(f);
@@ -180,7 +178,7 @@ int saveDB(const char *path, pDatabase db)
         printf("(saveDB)Erro: não foi possível criar %s\n",path);
         return 1;
     }
-    //Gravar para o ficheiro
+    /*Gravar para o ficheiro*/
     writeFile(f,db);
     
     fclose(f);
@@ -193,20 +191,20 @@ int loadAdmin(const char *path, pDatabase db)
     ssize_t len;
     char adminPassword[MAXLOGIN];
     if (!db) return 1;
-    //Abrir para leitura
+    /*Abrir para leitura*/
     f = open(path,O_RDONLY);
     if (f == -1)
     {
         printf("(loadAdmin)Erro: não foi possível abrir %s\n",path);
         return 1;
     }
-    //Ler password
+    /*Ler password*/
     len = read(f,adminPassword,sizeof(adminPassword)-1);
-    //Fechar o ficheiro
+    /*Fechar o ficheiro*/
     close(f);
     if (len >= 0)
     {
-        //Colocar o terminador
+        /*Colocar o terminador*/
         adminPassword[len] = 0;
         addUser(db,ADMIN,adminPassword);
         return 0;
@@ -223,7 +221,7 @@ int loadUsers(const char *path, pDatabase db)
     
     if (!db) return 1;
     
-    //Abrir para leitura
+    /*Abrir para leitura*/
     f = open(path, O_RDONLY,(S_IRUSR | S_IXOTH));
     if (f == -1)
     {
@@ -232,19 +230,19 @@ int loadUsers(const char *path, pDatabase db)
     }
     
     read(f,&TotalUsers,sizeof(int));
-    //Percorrer o número de Users
+    /*Percorrer o número de Users*/
     while (TotalUsers)
     {
-        //Ler o Nome Utilizador
+        /*Ler o Nome Utilizador*/
         read(f,UserName,sizeof(UserName));
-        //Ler password
+        /*Ler password*/
         read(f,UserPassword,sizeof(UserPassword));
-        //Criar nova User na estrutura
+        /*Criar nova User na estrutura*/
         addUser(db,UserName, UserPassword);
         TotalUsers--;
     }
     
-    //Fechar o ficheiro
+    /*Fechar o ficheiro*/
     close(f);
     return 0;
 }
@@ -264,7 +262,7 @@ void writeUserFile(int f,pDatabase p)
         else
         {
             totUsers = p->totalUsers -1;
-            //Gravar para o ficheiro
+            /*Gravar para o ficheiro*/
             write(f,&totUsers,sizeof(int));
             
             while(auxUser)
@@ -295,7 +293,7 @@ int saveUsers(const char *path, pDatabase db)
         printf("(saveUsers)Erro: não foi possível criar %s\n",path);
         return 1;
     }
-    //Gravar para o ficheiro
+    /*Gravar para o ficheiro*/
     writeUserFile(f,db);
 
     close(f);
@@ -307,7 +305,7 @@ int loadData(const char *path, pDatabase db)
     int f, i=0;
     char aux, data[MAXDATASTR];
     if (!db) return 1;
-    //Abrir ficheiro
+    /*Abrir ficheiro*/
     f = open(path,O_RDONLY);
     if (f == -1)
     {
@@ -316,19 +314,19 @@ int loadData(const char *path, pDatabase db)
             printf("(loadData)Erro: não foi possível abrir %s\n",path);
             printf("(loadData)criar %s com data por defeito\n",path);
         }
-        //Cria ficheiro com data por defeito
+        /*Cria ficheiro com data por defeito*/
         db->data = DEFAULTDATA;
         saveData(path,db);
         f = open(path,O_RDONLY);
         if (f == -1) return 1;
     }
-    //Ler o valor (data é um inteiro mas gravado em caracteres)
+    /*Ler o valor (data é um inteiro mas gravado em caracteres)*/
     while (read(f,&aux,sizeof(char)))
     {
         if (i == MAXDATASTR-1) break;
         data[i++] = aux;
     }
-    //Converter para inteiro
+    /*Converter para inteiro*/
     db->data = atoi(data);
     close(f);
     return 0;
@@ -339,7 +337,7 @@ int saveData(const char *path, pDatabase db)
     int f, i=0;
     char data[MAXDATASTR];
     if (!db) return 1;
-    //Cria ou substituir ficheiro
+    /*Cria ou substituir ficheiro*/
     
     f = creat(path,(S_IRUSR | S_IWUSR) | (S_IRGRP | S_IWGRP) | S_IROTH);
     if (f == -1)
@@ -347,12 +345,12 @@ int saveData(const char *path, pDatabase db)
         printf("(saveData)Erro: não foi possível criar %s\n",path);
         return 1;
     }
-    //Converter para string
+    /*Converter para string*/
     sprintf(data,"%d",db->data);
-    //Gravar cada caracter
+    /*Gravar cada caracter*/
     while (*(data+i))
         write(f,data+i++,sizeof(char));
-    //Gravar terminador
+    /*Gravar terminador*/
     write(f,data+i,sizeof(char));
     close(f);
     return 0;
