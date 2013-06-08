@@ -9,7 +9,7 @@
 
 pRequest req;
 
-#define TOTALCOMMANDS 5
+#define TOTALCOMMANDS 9
 
 void stopClient(int sinal)
 {
@@ -26,10 +26,17 @@ int main(int argc, const char * argv[])
     char *commandArgv[MAXCOMMANDARGS];
     int commandArgc = 0;
     int loggedIn = 0;
+    
     //Ao alterar a lista de comandos, é necessário alterar a constante TOTALCOMMANDS
-    char *listCommands[] = {"exit","help","login","logout","lista"};
-    char *listCommandsArgs[] = {"","","[username] [password]","",""};
-    int listCommandsArgc[] = {0,0,2,0,0};
+    char *listCommands[] = {"exit","help","login","logout","lista","mudapass","pesquisa","marca","desmarca"};
+    
+    //Lista de argumentos de cada comando
+    char *listCommandsArgs[] = {"","","[username] [password]","","","[passwordantiga] [passwordnova]","[origem] [destino]",
+                                "[id] [passaporte]","[id] [passaporte]"};
+    
+    //Total de argumentos de cada comando
+    int listCommandsArgc[] = {0,0,2,0,0,2,2,2,2};
+    
     //Request
     req = NULL;
     
@@ -91,7 +98,19 @@ int main(int argc, const char * argv[])
             }
         }
         else
-            doJob(command,commandArgv,&commandArgc,req);
+        {
+            switch (doJob(command,commandArgv,&commandArgc,req)) {
+                case PASSCHANGED:
+                    if (doLogout(req))
+                    {
+                        printf("Efectue o início de sessão com a nova password\n");
+                        destroyClientPipe(req);
+                        req = NULL;
+                        loggedIn = 0;
+                    }
+                    break;
+            }
+        }
     }
     //Logout
     doLogout(req);

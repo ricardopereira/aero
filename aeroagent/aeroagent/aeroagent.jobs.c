@@ -16,5 +16,22 @@ int doJob(char *command, char *argv[], int *argc, pRequest req)
     {
         sendRequestWithExtendedText(pipeName,req,command,&resposta);
     }
+    else if (strcmp(argv[0],"mudapass") == 0)
+    {
+        sendRequestWithFail(pipeName,req,command,&resposta);
+        return PASSCHANGED;
+    }
+    else if (strcmp(argv[0],"pesquisa") == 0)
+    {
+        sendRequestWithExtendedText(pipeName,req,command,&resposta);
+    }
+    else if (strcmp(argv[0],"marca") == 0)
+    {
+        sendRequestWithFail(pipeName,req,command,&resposta);
+    }
+    else if (strcmp(argv[0],"desmarca") == 0)
+    {
+        sendRequestWithFail(pipeName,req,command,&resposta);
+    }
     return 0;
 }

@@ -33,6 +33,10 @@ int doAddUser(pAction action, char *pipe, pDatabase db, char *argv[], int argc);
 int doDelUser(pAction action, char *pipe, pDatabase db, char *argv[], int argc);
 int doAddCity(pAction action, char *pipe, pDatabase db, char *argv[], int argc);
 int doDelCity(pAction action, char *pipe, pDatabase db, char *argv[], int argc);
+int doMudaPass(char *username, pAction action, char *pipe, pDatabase db, char *argv[], int argc);
+int doPesquisaVoos(pAction action, char *pipe, int client, pDatabase db, char *argv[], int argc);
+int doMarcaViagem(pAction action, char *pipe, pDatabase db, char *argv[], int argc);
+int doDesmarcaViagem(pAction action, char *pipe, pDatabase db, char *argv[], int argc);
 
 void initRequest(pRequest r)
 {
@@ -221,8 +225,17 @@ int doJob(pDatabase db, pRequest req, char *pipe)
             printf("(%s)falhou login: %s\nabort\n",pipe,req->username);
     }
     
+    //Se o login falhou, então aborta a operação
     if (action.idAction == LOGIN_FAILED)
+    {
+        snprintf(action.message,MAXMESSAGE,"login failed to \"%s\"",req->username);
+        action.hasText = 0;
+        write(client,&action.idAction,sizeof(int));
+        write(client,&action.hasText,sizeof(int));
+        write(client,action.message,sizeof(action.message));
+        close(client);
         return NOACCESS;
+    }
     
     //Interpretar os argumentos
     getCommandArgs(req->command,commandArgv,&commandArgc);
@@ -304,13 +317,29 @@ int doJob(pDatabase db, pRequest req, char *pipe)
     {
         commandDone = doDelUser(&action,pipe,db,commandArgv,commandArgc);
     }
+    else if (strcmp("mudapass",commandArgv[0]) == 0 && action.idAction == LOGIN_OK && commandArgc == 3)
+    {
+        commandDone = doMudaPass(req->username,&action,pipe,db,commandArgv,commandArgc);
+    }
+    else if (strcmp("pesquisa",commandArgv[0]) == 0 && action.idAction == LOGIN_OK && commandArgc == 3)
+    {
+        commandDone = doPesquisaVoos(&action,pipe,client,db,commandArgv,commandArgc);
+    }
+    else if (strcmp("marca",commandArgv[0]) == 0 && action.idAction == LOGIN_OK && commandArgc == 3)
+    {
+        commandDone = doMarcaViagem(&action,pipe,db,commandArgv,commandArgc);
+    }
+    else if (strcmp("desmarca",commandArgv[0]) == 0 && action.idAction == LOGIN_OK && commandArgc == 3)
+    {
+        commandDone = doDesmarcaViagem(&action,pipe,db,commandArgv,commandArgc);
+    }
     else
     {
         action.idAction = NOEXIST_REQ;
-        sprintf(action.message,"%s","não implementado");
+        snprintf(action.message,MAXMESSAGE,"não implementado");
         
         if (!db->inBackground)
-            printf("(%s)não implementado\n",pipe);
+            printf("\"%s\" não implementado\n",req->command);
     }
     
     if (!commandDone)
@@ -531,7 +560,7 @@ int doLista(pAction action, char *pipe, int client, pDatabase db, char *argv[], 
         auxVoo = db->voos;
         while (auxVoo)
         {
-            snprintf(text,sizeof(text),"%d: DIA %d, ORIGEM %s, DESTINO %s, LUGARES VAGOS: %d\n",
+            snprintf(text,sizeof(text)," %d: DIA %d, ORIGEM %s, DESTINO %s, LUGARES VAGOS: %d\n",
                      auxVoo->ID,
                      auxVoo->dia,
                      auxVoo->cidadeOrigem->nome,
@@ -712,5 +741,122 @@ int doDelCity(pAction action, char *pipe, pDatabase db, char *argv[], int argc)
         removeCidade(db,argv[1]);
         action->idAction = SUCCESS_REQ;
     }
+    return 0;
+}
+
+int doMudaPass(char *username, pAction action, char *pipe, pDatabase db, char *argv[], int argc)
+{
+    pUser auxUser = findUser(db->users,username);
+    //Verificar se está a adicionar o administrador
+    if (strcmp(ADMIN,username) == 0)
+    {
+        action->idAction = FAILED_REQ;
+        sprintf(action->message,"Não é possível mudar a password do administrador");
+    }
+    //Verificar se utilizador existe
+    else if (!auxUser)
+    {
+        action->idAction = FAILED_REQ;
+        sprintf(action->message,"Utilizador \"%s\" não existe",username);
+    }
+    //Verificar se a password antiga coincide com a password atual
+    else if (strcmp(auxUser->password,argv[1]) != 0)
+    {
+        action->idAction = FAILED_REQ;
+        sprintf(action->message,"Password antiga não coincide");
+    }
+    else if (argv[2] == 0)
+    {
+        action->idAction = FAILED_REQ;
+        sprintf(action->message,"Password nova não pode ser nula");
+    }
+    else if (strlen(argv[2]) <= MINPASSWORD)
+    {
+        action->idAction = FAILED_REQ;
+        sprintf(action->message,"Password nova tem que ser superior a %d caracteres",MINPASSWORD);
+    }
+    else if (strlen(argv[2]) > MAXLOGIN)
+    {
+        action->idAction = FAILED_REQ;
+        sprintf(action->message,"Password nova tem que ser inferior a %d caracteres",MAXLOGIN);
+    }
+    else
+    {
+        snprintf(auxUser->password,MAXLOGIN,"%s",argv[2]);
+        saveUsers(SOAGENTES,db);
+        action->idAction = SUCCESS_REQ;
+    }
+    return 0;
+}
+
+int doPesquisaVoos(pAction action, char *pipe, int client, pDatabase db, char *argv[], int argc)
+{
+    pVoo auxVoo;
+    char text[MAXMESSAGE];
+    int totalLines = 0;
+    
+    //ToDo - melhorar esta situação
+    auxVoo = db->voos;
+    while (auxVoo)
+    {
+        if (sameString(auxVoo->cidadeOrigem->nome,argv[1]) == 0 && sameString(auxVoo->cidadeDestino->nome,argv[2]) == 0)
+        {
+            totalLines++;
+        }
+        auxVoo = auxVoo->next;
+    }
+    
+    action->idAction = SUCCESS_REQ;
+    //Resposta
+    if (totalLines)
+    {
+        snprintf(action->message,MAXMESSAGE,"\nVoos disponíveis (%s -> %s): %d\n",argv[1],argv[2],totalLines);
+        
+        //////////////////
+        //Enviar resposta
+        //////////////////
+        action->hasText = 1;
+        write(client,&action->idAction,sizeof(int));
+        write(client,&action->hasText,sizeof(int));
+        write(client,action->message,sizeof(action->message));
+        //Número de Linhas
+        write(client,&totalLines,sizeof(int));
+        
+        auxVoo = db->voos;
+        while (auxVoo)
+        {
+            if (sameString(auxVoo->cidadeOrigem->nome,argv[1]) == 0 && sameString(auxVoo->cidadeDestino->nome,argv[2]) == 0)
+            {
+                snprintf(text,sizeof(text)," %d: DIA %d, ORIGEM %s, DESTINO %s, LUGARES VAGOS: %d\n",
+                         auxVoo->ID,
+                         auxVoo->dia,
+                         auxVoo->cidadeOrigem->nome,
+                         auxVoo->cidadeDestino->nome,
+                         auxVoo->capacidade-auxVoo->ocupacao);
+                
+                //Escrever para o client
+                write(client,text,sizeof(text));
+            }
+            auxVoo = auxVoo->next;
+        }
+        
+        close(client);
+        //Resposta enviada
+        return 1;
+    }
+    else
+    {
+        snprintf(action->message,MAXMESSAGE,"Sem voos disponíveis para %s -> %s\n",argv[1],argv[2]);
+        return 0;
+    }
+}
+
+int doMarcaViagem(pAction action, char *pipe, pDatabase db, char *argv[], int argc)
+{
+    return 0;
+}
+
+int doDesmarcaViagem(pAction action, char *pipe, pDatabase db, char *argv[], int argc)
+{
     return 0;
 }

@@ -167,6 +167,10 @@ void sendRequest(char *pipeClient, pRequest req, char *command, pAction resp)
     }
     //Fechar pipe Cliente
     close(client);
+    
+    //Login com sucesso?
+    if (resp->idAction == LOGIN_FAILED)
+        printf("%s\n",resp->message);
 }
 
 void sendRequestWithStatus(char *pipeClient, pRequest req, char *command, pAction resp)
